@@ -242,10 +242,10 @@
     }
 
     .card-header h2 {
-      font-size: 1.30rem;      /* un poil plus grand */
-      font-weight: 700;        /* plus gras */
-      color: #ffe38a;          /* léger jaune chaud, lisible sur fond bleu */
-      letter-spacing: 0.02em;  /* très léger espacement */
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffe38a;
+      letter-spacing: 0.02em;
     }
 
     .card-header small {
@@ -349,9 +349,14 @@
       text-align: left;
     }
 
+    table thead tr {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
     th {
-      font-weight: 500;
-      color: #d2daf0;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #f5f7ff;
     }
 
     .alerts-list {
@@ -505,6 +510,22 @@
       .current-temp { font-size: 2.1rem; }
       body.compact .current-temp { font-size: 1.8rem; }
     }
+
+    /* AQI badge (fond coloré) */
+    .aqi-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #fff;
+      display: inline-block;
+    }
+
+    .aqi-good      { background-color: #2ecc71; }
+    .aqi-fair      { background-color: #a2d729; }
+    .aqi-moderate  { background-color: #f1c40f; }
+    .aqi-poor      { background-color: #e67e22; }
+    .aqi-very-poor { background-color: #e74c3c; }
+
   </style>
 </head>
 <body>
@@ -711,7 +732,7 @@
     <section class="card" id="stormCard">
       <div class="card-header">
         <h2>Orages & instabilité</h2>
-        <small>Indice simple (Open-Meteo)</small>
+        <small>Indice simple (Open-Meteo / Météo-France)</small>
       </div>
       <div id="stormContent"></div>
     </section>
@@ -757,9 +778,8 @@
 
   <script>
     // ------------- CONFIG -------------
-    const API_KEY = "10afa751c6a2b85e16dcf699a9392307"; // <-- à remplacer
+    const API_KEY = "10afa751c6a2b85e16dcf699a9392307"; // <-- mets ta clé ici
     const OPENMETEO_BASE = "https://api.open-meteo.com/v1/meteofrance";
-
 
     const BASE_LOCATIONS = {
       flers: { name: "Flers", lat: 48.75, lon: -0.57, base: true },
@@ -1690,9 +1710,11 @@
         div.textContent = "Données indisponibles.";
         return;
       }
+
       const d = aqiData.list[0];
       const aqi = d.main.aqi;
       const comp = d.components || {};
+
       const labelMap = {
         1: "Très bon",
         2: "Bon",
@@ -1701,10 +1723,23 @@
         5: "Très mauvais"
       };
       const label = labelMap[aqi] || "Inconnu";
+
+      let aqiClass = "aqi-moderate";
+      switch (aqi) {
+        case 1: aqiClass = "aqi-good"; break;
+        case 2: aqiClass = "aqi-fair"; break;
+        case 3: aqiClass = "aqi-moderate"; break;
+        case 4: aqiClass = "aqi-poor"; break;
+        case 5: aqiClass = "aqi-very-poor"; break;
+      }
+
       div.innerHTML = "";
 
       const rows = [
-        ["Indice global", `${aqi} – ${label}`],
+        [
+          "Indice global",
+          `<span class="aqi-badge ${aqiClass}">${aqi} – ${label}</span>`
+        ],
         ["PM₂.₅", (comp.pm2_5 || 0).toFixed(1) + " µg/m³"],
         ["PM₁₀", (comp.pm10 || 0).toFixed(1) + " µg/m³"],
         ["O₃", (comp.o3 || 0).toFixed(1) + " µg/m³"],
@@ -1713,7 +1748,8 @@
       rows.forEach(([l, v]) => {
         const row = document.createElement("div");
         row.className = "aqi-row";
-        row.innerHTML = `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
+        row.innerHTML =
+          `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
         div.appendChild(row);
       });
     }
@@ -1870,14 +1906,8 @@
       updateRadarFrames();
       applyTheme(null);
       loadAndRender();
-      setInterval(loadAndRender, 5 * 60 * 1000);
+      setInterval(loadAndRender, 5 * 60 * 1000); // toutes les 5 minutes
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
