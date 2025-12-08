@@ -525,6 +525,19 @@
     .aqi-moderate  { background-color: #f1c40f; }
     .aqi-poor      { background-color: #e67e22; }
     .aqi-very-poor { background-color: #e74c3c; }
+/* Badge risque orageux */
+.storm-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #fff;
+  display: inline-block;
+}
+
+.storm-low      { background-color: #2ecc71; }  /* Faible → vert */
+.storm-moderate { background-color: #f1c40f; }  /* Modéré → jaune */
+.storm-marked   { background-color: #e67e22; }  /* Marqué → orange */
+.storm-strong   { background-color: #e74c3c; }  /* Fort → rouge */
 
   </style>
 </head>
@@ -1778,32 +1791,46 @@
     }
 
     function renderStormRisk(omData) {
-      const div = document.getElementById("stormContent");
-      if (!omData) {
-        div.textContent = "Données Open-Meteo indisponibles.";
-        return;
-      }
-      const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
-      const maxVal = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
+  const div = document.getElementById("stormContent");
+  if (!omData) {
+    div.textContent = "Données Open-Meteo indisponibles.";
+    return;
+  }
 
-      let niveau = "Faible";
-      if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
-      else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
-      else if (maxVal > 1500) niveau = "Fort";
+  const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
+  const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
 
-      div.innerHTML = "";
-      const rows = [
-        ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
-        ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
-        ["Risque orageux (simple)", niveau]
-      ];
-      rows.forEach(([l, v]) => {
-        const row = document.createElement("div");
-        row.className = "storm-row";
-        row.innerHTML = `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
-        div.appendChild(row);
-      });
-    }
+  let niveau = "Faible";
+  if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
+  else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
+  else if (maxVal > 1500) niveau = "Fort";
+
+  // Choix de la classe CSS en fonction du niveau
+  let riskClass = "storm-low";
+  if (niveau === "Modéré") riskClass = "storm-moderate";
+  else if (niveau === "Marqué") riskClass = "storm-marked";
+  else if (niveau === "Fort") riskClass = "storm-strong";
+
+  div.innerHTML = "";
+
+  const rows = [
+    ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
+    ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
+    [
+      "Risque orageux (simple)",
+      `<span class="storm-badge ${riskClass}">${niveau}</span>`
+    ]
+  ];
+
+  rows.forEach(([l, v]) => {
+    const row = document.createElement("div");
+    row.className = "storm-row";
+    row.innerHTML =
+      `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
+    div.appendChild(row);
+  });
+}
+
 
     // ------------- CHARGEMENT GLOBAL -------------
 
@@ -1911,3 +1938,4 @@
   </script>
 </body>
 </html>
+
