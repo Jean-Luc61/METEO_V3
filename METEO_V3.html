@@ -192,25 +192,24 @@
 
     /* Grille principale : 3 colonnes sur grand écran */
     .dashboard {
-  max-width: 1600px;
-  margin: 0 auto;
-  display: grid;
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
 
-  grid-template-columns: 2.1fr 1.2fr 1.1fr;
-  grid-template-areas:
-    "radar    radar    atm"
-    "radar    radar    current"
-    "rain     temp24   temp24"
-    "forecast forecast map"
-    "wind     wind     map"
-    "compare  aqi      storms"
-    "history  summary  miniradar"
-    "sun      alerts   miniradar";
+      grid-template-columns: 2.1fr 1.2fr 1.1fr;
+      grid-template-areas:
+        "radar    radar    atm"
+        "radar    radar    current"
+        "rain     temp24   temp24"
+        "forecast forecast map"
+        "wind     wind     map"
+        "compare  aqi      storms"
+        "history  summary  miniradar"
+        "sun      alerts   miniradar";
 
-  gap: 18px;
-  transition: gap 0.3s ease;
-}
-
+      gap: 18px;
+      transition: gap 0.3s ease;
+    }
 
     body.compact .dashboard {
       gap: 10px;
@@ -397,23 +396,24 @@
       color: #f6f7ff;
     }
 
-  #rainChart {
-  width: 100%;
-  height: 140px;  /* plus petit */
-  background: radial-gradient(circle at 10% 0, #3a567f, #151a28);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 4px;
-}
+    /* Graph pluie & météogramme */
+    #rainChart {
+      width: 100%;
+      height: 140px;
+      background: radial-gradient(circle at 10% 0, #3a567f, #151a28);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
+    }
 
-#temp24Chart {
-  width: 100%;
-  height: 240px;  /* plus grand */
-  background: radial-gradient(circle at 10% 0, #3a567f, #151a28);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 4px;
-}
+    #temp24Chart {
+      width: 100%;
+      height: 240px;
+      background: radial-gradient(circle at 10% 0, #3a567f, #151a28);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
+    }
 
     .summary-text {
       font-size: 0.9rem;
@@ -536,20 +536,20 @@
     .aqi-moderate  { background-color: #f1c40f; }
     .aqi-poor      { background-color: #e67e22; }
     .aqi-very-poor { background-color: #e74c3c; }
-/* Badge risque orageux */
-.storm-badge {
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  color: #fff;
-  display: inline-block;
-}
 
-.storm-low      { background-color: #2ecc71; }  /* Faible → vert */
-.storm-moderate { background-color: #f1c40f; }  /* Modéré → jaune */
-.storm-marked   { background-color: #e67e22; }  /* Marqué → orange */
-.storm-strong   { background-color: #e74c3c; }  /* Fort → rouge */
+    /* Badge risque orageux */
+    .storm-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #fff;
+      display: inline-block;
+    }
 
+    .storm-low      { background-color: #2ecc71; }  /* Faible → vert */
+    .storm-moderate { background-color: #f1c40f; }  /* Modéré → jaune */
+    .storm-marked   { background-color: #e67e22; }  /* Marqué → orange */
+    .storm-strong   { background-color: #e74c3c; }  /* Fort → rouge */
   </style>
 </head>
 <body>
@@ -802,7 +802,7 @@
 
   <script>
     // ------------- CONFIG -------------
-    const API_KEY = "10afa751c6a2b85e16dcf699a9392307"; // <-- mets ta clé ici
+    const API_KEY = "10afa751c6a2b85e16dcf699a9392307"; // <-- ta clé OW
     const OPENMETEO_BASE = "https://api.open-meteo.com/v1/meteofrance";
 
     const BASE_LOCATIONS = {
@@ -1529,31 +1529,30 @@
       const stepX = (w - 2*padding) / (temps.length - 1 || 1);
       const range = (maxT - minT) || 1;
 
+      // Barres de pluie avec palette type radar
       if (maxRain > 0) {
-  const maxBarH = innerH * 0.45;
+        const maxBarH = innerH * 0.45;
 
-  for (let i = 0; i < rain.length; i++) {
-    const r = rain[i];
-    if (!r || r <= 0) continue;
+        for (let i = 0; i < rain.length; i++) {
+          const r = rain[i];
+          if (!r || r <= 0) continue;
 
-    const x = padding + i * stepX;
-    const baseY = h - padding;
-    const barH = (r / maxRain) * maxBarH;
-    const barW = stepX * 0.4;
+          const x = padding + i * stepX;
+          const baseY = h - padding;
+          const barH = (r / maxRain) * maxBarH;
+          const barW = stepX * 0.4;
 
-    // Convertir en mm/h approximatif
-    const mmh = r / 3;
+          const mmh = r / 3; // approx mm/h
 
-    let color = "rgba(0, 0, 80, 0.4)";          // bleu foncé - pluie très faible
+          let color = "rgba(0, 0, 80, 0.4)";              // très faible
+          if (mmh >= 0.1 && mmh < 0.5)      color = "rgba(0, 80, 200, 0.5)";   // bruine / faible
+          else if (mmh >= 0.5 && mmh < 1.3) color = "rgba(0, 150, 80, 0.6)";    // modérée
+          else if (mmh >= 1.3 && mmh < 3)   color = "rgba(220, 200, 0, 0.7)";   // marquée
+          else if (mmh >= 3 && mmh < 6)     color = "rgba(255, 128, 0, 0.8)";   // forte
+          else if (mmh >= 6)                color = "rgba(255, 0, 0, 0.85)";    // très forte
 
-    if (mmh >= 0.1 && mmh < 0.5)  color = "rgba(0, 80, 200, 0.5)";   // bleu clair
-    if (mmh >= 0.5 && mmh < 1.3)  color = "rgba(0, 150, 80, 0.6)";   // vert
-    if (mmh >= 1.3 && mmh < 3)    color = "rgba(220, 200, 0, 0.7)";  // jaune
-    if (mmh >= 3 && mmh < 6)      color = "rgba(255, 128, 0, 0.8)";  // orange
-    if (mmh >= 6)                 color = "rgba(255, 0, 0, 0.85)";   // rouge
-
-    ctx.fillStyle = color;
-    ctx.fillRect(x - barW / 2, baseY - barH, barW, barH);
+          ctx.fillStyle = color;
+          ctx.fillRect(x - barW / 2, baseY - barH, barW, barH);
         }
       }
 
@@ -1746,74 +1745,136 @@
     }
 
     function renderAirQuality(aqiData) {
-  const div = document.getElementById("aqiContent");
-  if (!aqiData || !aqiData.list || !aqiData.list[0]) {
-    div.textContent = "Données indisponibles.";
-    return;
-  }
+      const div = document.getElementById("aqiContent");
+      if (!aqiData || !aqiData.list || !aqiData.list[0]) {
+        div.textContent = "Données indisponibles.";
+        return;
+      }
 
-  const d = aqiData.list[0];
-  const aqi = d.main.aqi;
-  const comp = d.components || {};
+      const d = aqiData.list[0];
+      const aqi = d.main.aqi;
+      const comp = d.components || {};
 
-  const labelMap = {
-    1: "Très bon",
-    2: "Bon",
-    3: "Moyen",
-    4: "Mauvais",
-    5: "Très mauvais"
-  };
-  const label = labelMap[aqi] || "Inconnu";
+      const labelMap = {
+        1: "Très bon",
+        2: "Bon",
+        3: "Moyen",
+        4: "Mauvais",
+        5: "Très mauvais"
+      };
+      const label = labelMap[aqi] || "Inconnu";
 
-  let aqiClass = "aqi-moderate";
-  switch (aqi) {
-    case 1: aqiClass = "aqi-good"; break;
-    case 2: aqiClass = "aqi-fair"; break;
-    case 3: aqiClass = "aqi-moderate"; break;
-    case 4: aqiClass = "aqi-poor"; break;
-    case 5: aqiClass = "aqi-very-poor"; break;
-  }
+      let aqiClass = "aqi-moderate";
+      switch (aqi) {
+        case 1: aqiClass = "aqi-good"; break;
+        case 2: aqiClass = "aqi-fair"; break;
+        case 3: aqiClass = "aqi-moderate"; break;
+        case 4: aqiClass = "aqi-poor"; break;
+        case 5: aqiClass = "aqi-very-poor"; break;
+      }
 
-  // --- Composants OpenWeather (en µg/m³) ---
-  const pm25 = comp.pm2_5 || 0;
-  const pm10 = comp.pm10 || 0;
-  const o3ug = comp.o3   || 0;
-  const no2ug = comp.no2 || 0;
-  const so2ug = comp.so2 || 0;
-  const coug  = comp.co  || 0;
+      const pm25 = comp.pm2_5 || 0;
+      const pm10 = comp.pm10 || 0;
+      const o3ug = comp.o3   || 0;
+      const no2ug = comp.no2 || 0;
+      const so2ug = comp.so2 || 0;
+      const coug  = comp.co  || 0;
 
-  // --- Conversions µg/m³ -> ppb / ppm ---
-  // ppb = (µg/m³ * 24.45) / M  (M = masse molaire en g/mol)
-  const o3Ppb  = o3ug  > 0 ? (o3ug  * 24.45 / 48.0).toFixed(0) : 0;   // O₃
-  const no2Ppb = no2ug > 0 ? (no2ug * 24.45 / 46.0).toFixed(0) : 0;   // NO₂
-  const so2Ppb = so2ug > 0 ? (so2ug * 24.45 / 64.0).toFixed(0) : 0;   // SO₂
-  // CO en ppm
-  const coPpm  = coug  > 0 ? (coug  * 24.45 / 28000).toFixed(2) : 0;
+      // conversions µg/m³ -> ppb / ppm
+      const o3Ppb  = o3ug  > 0 ? (o3ug  * 24.45 / 48.0).toFixed(0) : 0;   // O3
+      const no2Ppb = no2ug > 0 ? (no2ug * 24.45 / 46.0).toFixed(0) : 0;   // NO2
+      const so2Ppb = so2ug > 0 ? (so2ug * 24.45 / 64.0).toFixed(0) : 0;   // SO2
+      const coPpm  = coug  > 0 ? (coug  * 24.45 / 28000).toFixed(2) : 0;  // CO
 
-  div.innerHTML = "";
+      div.innerHTML = "";
 
-  const rows = [
-    [
-      "Indice global",
-      `<span class="aqi-badge ${aqiClass}">${aqi} – ${label}</span>`
-    ],
-    ["PM₂.₅", `${pm25.toFixed(1)} µg/m³`],
-    ["PM₁₀", `${pm10.toFixed(1)} µg/m³`],
-    ["O₃",   o3Ppb  ? `${o3Ppb} ppb`   : "<1 ppb"],
-    ["NO₂",  no2Ppb ? `${no2Ppb} ppb`  : "<1 ppb"],
-    ["SO₂",  so2Ppb ? `${so2Ppb} ppb`  : "<1 ppb"],
-    ["CO",   coPpm  ? `${coPpm} ppm`   : "<0.01 ppm"]
-  ];
+      const rows = [
+        [
+          "Indice global",
+          `<span class="aqi-badge ${aqiClass}">${aqi} – ${label}</span>`
+        ],
+        ["PM₂.₅", `${pm25.toFixed(1)} µg/m³`],
+        ["PM₁₀", `${pm10.toFixed(1)} µg/m³`],
+        ["O₃",   o3Ppb  ? `${o3Ppb} ppb`   : "<1 ppb"],
+        ["NO₂",  no2Ppb ? `${no2Ppb} ppb`  : "<1 ppb"],
+        ["SO₂",  so2Ppb ? `${so2Ppb} ppb`  : "<1 ppb"],
+        ["CO",   coPpm  ? `${coPpm} ppm`   : "<0.01 ppm"]
+      ];
 
-  rows.forEach(([l, v]) => {
-    const row = document.createElement("div");
-    row.className = "aqi-row";
-    row.innerHTML =
-      `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
-    div.appendChild(row);
-  });
-}
+      rows.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "aqi-row";
+        row.innerHTML =
+          `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
+        div.appendChild(row);
+      });
+    }
 
+    function renderModelComparison(owData, omData) {
+      const tbody = document.querySelector("#compareTable tbody");
+      tbody.innerHTML = "";
+
+      if (!owData || !omData || !omData.nextHours || !owData.short_term_forecast.hours) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4">Données modèles indisponibles.</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      const ow = owData.short_term_forecast.hours;
+      const om = omData.nextHours;
+      const n = Math.min(ow.length, om.length, 3);
+
+      for (let i = 0; i < n; i++) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${ow[i].time}</td>
+          <td>${ow[i].temp_c != null ? ow[i].temp_c.toFixed(1) : "—"}</td>
+          <td>${om[i].temp != null ? om[i].temp.toFixed(1) : "—"}</td>
+          <td>${ow[i].rain_mm_3h != null ? ow[i].rain_mm_3h.toFixed(1) : "0.0"} / ${om[i].precip.toFixed(1)}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function renderStormRisk(omData) {
+      const div = document.getElementById("stormContent");
+      if (!omData) {
+        div.textContent = "Données Open-Meteo indisponibles.";
+        return;
+      }
+
+      const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
+      const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
+
+      let niveau = "Faible";
+      if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
+      else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
+      else if (maxVal > 1500) niveau = "Fort";
+
+      let riskClass = "storm-low";
+      if (niveau === "Modéré") riskClass = "storm-moderate";
+      else if (niveau === "Marqué") riskClass = "storm-marked";
+      else if (niveau === "Fort") riskClass = "storm-strong";
+
+      div.innerHTML = "";
+
+      const rows = [
+        ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
+        ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
+        [
+          "Risque orageux (simple)",
+          `<span class="storm-badge ${riskClass}">${niveau}</span>`
+        ]
+      ];
+
+      rows.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "storm-row";
+        row.innerHTML =
+          `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
+        div.appendChild(row);
+      });
+    }
 
     // ------------- CHARGEMENT GLOBAL -------------
 
@@ -1921,12 +1982,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
