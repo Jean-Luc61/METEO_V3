@@ -1746,115 +1746,70 @@
     }
 
     function renderAirQuality(aqiData) {
-      const div = document.getElementById("aqiContent");
-      if (!aqiData || !aqiData.list || !aqiData.list[0]) {
-        div.textContent = "Données indisponibles.";
-        return;
-      }
-
-      const d = aqiData.list[0];
-      const aqi = d.main.aqi;
-      const comp = d.components || {};
-
-      const labelMap = {
-        1: "Très bon",
-        2: "Bon",
-        3: "Moyen",
-        4: "Mauvais",
-        5: "Très mauvais"
-      };
-      const label = labelMap[aqi] || "Inconnu";
-
-      let aqiClass = "aqi-moderate";
-      switch (aqi) {
-        case 1: aqiClass = "aqi-good"; break;
-        case 2: aqiClass = "aqi-fair"; break;
-        case 3: aqiClass = "aqi-moderate"; break;
-        case 4: aqiClass = "aqi-poor"; break;
-        case 5: aqiClass = "aqi-very-poor"; break;
-      }
-
-      div.innerHTML = "";
-
-      const rows = [
-        [
-          "Indice global",
-          `<span class="aqi-badge ${aqiClass}">${aqi} – ${label}</span>`
-        ],
-        ["PM₂.₅", (comp.pm2_5 || 0).toFixed(1) + " µg/m³"],
-        ["PM₁₀", (comp.pm10 || 0).toFixed(1) + " µg/m³"],
-        ["O₃", (comp.o3 || 0).toFixed(1) + " µg/m³"],
-        ["NO₂", (comp.no2 || 0).toFixed(1) + " µg/m³"]
-      ];
-      rows.forEach(([l, v]) => {
-        const row = document.createElement("div");
-        row.className = "aqi-row";
-        row.innerHTML =
-          `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
-        div.appendChild(row);
-      });
-    }
-
-    function renderModelComparison(owData, omData) {
-      const tbody = document.querySelector("#compareTable tbody");
-      tbody.innerHTML = "";
-      if (!owData || !omData || !omData.nextHours || !owData.short_term_forecast.hours) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4">Données modèles indisponibles.</td>`;
-        tbody.appendChild(tr);
-        return;
-      }
-      const ow = owData.short_term_forecast.hours;
-      const om = omData.nextHours;
-      const n = Math.min(ow.length, om.length, 3);
-      for (let i = 0; i < n; i++) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${ow[i].time}</td>
-          <td>${ow[i].temp_c != null ? ow[i].temp_c.toFixed(1) : "—"}</td>
-          <td>${om[i].temp != null ? om[i].temp.toFixed(1) : "—"}</td>
-          <td>${ow[i].rain_mm_3h != null ? ow[i].rain_mm_3h.toFixed(1) : "0.0"} / ${om[i].precip.toFixed(1)}</td>`;
-        tbody.appendChild(tr);
-      }
-    }
-
-    function renderStormRisk(omData) {
-  const div = document.getElementById("stormContent");
-  if (!omData) {
-    div.textContent = "Données Open-Meteo indisponibles.";
+  const div = document.getElementById("aqiContent");
+  if (!aqiData || !aqiData.list || !aqiData.list[0]) {
+    div.textContent = "Données indisponibles.";
     return;
   }
 
-  const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
-  const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
+  const d = aqiData.list[0];
+  const aqi = d.main.aqi;
+  const comp = d.components || {};
 
-  let niveau = "Faible";
-  if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
-  else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
-  else if (maxVal > 1500) niveau = "Fort";
+  const labelMap = {
+    1: "Très bon",
+    2: "Bon",
+    3: "Moyen",
+    4: "Mauvais",
+    5: "Très mauvais"
+  };
+  const label = labelMap[aqi] || "Inconnu";
 
-  // Choix de la classe CSS en fonction du niveau
-  let riskClass = "storm-low";
-  if (niveau === "Modéré") riskClass = "storm-moderate";
-  else if (niveau === "Marqué") riskClass = "storm-marked";
-  else if (niveau === "Fort") riskClass = "storm-strong";
+  let aqiClass = "aqi-moderate";
+  switch (aqi) {
+    case 1: aqiClass = "aqi-good"; break;
+    case 2: aqiClass = "aqi-fair"; break;
+    case 3: aqiClass = "aqi-moderate"; break;
+    case 4: aqiClass = "aqi-poor"; break;
+    case 5: aqiClass = "aqi-very-poor"; break;
+  }
+
+  // --- Récupération des composantes OpenWeather (en µg/m³) ---
+  const pm25 = comp.pm2_5 || 0;
+  const pm10 = comp.pm10 || 0;
+  const o3ug = comp.o3   || 0;
+  const no2ug = comp.no2 || 0;
+  const so2ug = comp.so2 || 0;
+  const coug  = comp.co  || 0;
+
+  // --- Conversions µg/m³ -> ppb / ppm (formules standard) ---
+  // ppb = (µg/m³ * 24.45) / M (M = masse molaire en g/mol)
+  const o3Ppb  = o3ug  > 0 ? (o3ug  * 24.45 / 48.0) .toFixed(0) : 0;   // O₃
+  const no2Ppb = no2ug > 0 ? (no2ug * 24.45 / 46.0) .toFixed(0) : 0;   // NO₂
+  const so2Ppb = so2ug > 0 ? (so2ug * 24.45 / 64.0) .toFixed(0) : 0;   // SO₂
+  // CO en ppm
+  const coPpm  = coug  > 0 ? (coug  * 24.45 / 28000).toFixed(2) : 0;
 
   div.innerHTML = "";
 
   const rows = [
-    ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
-    ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
     [
-      "Risque orageux (simple)",
-      `<span class="storm-badge ${riskClass}">${niveau}</span>`
-    ]
+      "Indice global",
+      `<span class="aqi-badge ${aqiClass}">${aqi} – ${label}</span>`
+    ],
+    ["PM₂.₅", `${pm25.toFixed(1)} µg/m³`],
+    ["PM₁₀", `${pm10.toFixed(1)} µg/m³`],
+    ["O₃",   o3Ppb ? `${o3Ppb} ppb` : "<1 ppb"],
+    ["NO₂",  no2Ppb ? `${no2Ppb} ppb` : "<1 ppb"],
+    ["SO₂",  so2Ppb ? `${so2Ppb} ppb` : "<1 ppb"],
+    ["CO",   coPpm  ? `${coPpm} ppm` : "<0.01 ppm`"]
   ];
 
   rows.forEach(([l, v]) => {
     const row = document.createElement("div");
-    row.className = "storm-row";
+    row.className = "aqi-row";
     row.innerHTML =
-      `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
+      `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
     div.appendChild(row);
   });
 }
@@ -1966,6 +1921,7 @@
   </script>
 </body>
 </html>
+
 
 
 
