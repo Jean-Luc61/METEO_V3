@@ -1774,7 +1774,7 @@
     case 5: aqiClass = "aqi-very-poor"; break;
   }
 
-  // --- Récupération des composantes OpenWeather (en µg/m³) ---
+  // --- Composants OpenWeather (en µg/m³) ---
   const pm25 = comp.pm2_5 || 0;
   const pm10 = comp.pm10 || 0;
   const o3ug = comp.o3   || 0;
@@ -1782,11 +1782,11 @@
   const so2ug = comp.so2 || 0;
   const coug  = comp.co  || 0;
 
-  // --- Conversions µg/m³ -> ppb / ppm (formules standard) ---
-  // ppb = (µg/m³ * 24.45) / M (M = masse molaire en g/mol)
-  const o3Ppb  = o3ug  > 0 ? (o3ug  * 24.45 / 48.0) .toFixed(0) : 0;   // O₃
-  const no2Ppb = no2ug > 0 ? (no2ug * 24.45 / 46.0) .toFixed(0) : 0;   // NO₂
-  const so2Ppb = so2ug > 0 ? (so2ug * 24.45 / 64.0) .toFixed(0) : 0;   // SO₂
+  // --- Conversions µg/m³ -> ppb / ppm ---
+  // ppb = (µg/m³ * 24.45) / M  (M = masse molaire en g/mol)
+  const o3Ppb  = o3ug  > 0 ? (o3ug  * 24.45 / 48.0).toFixed(0) : 0;   // O₃
+  const no2Ppb = no2ug > 0 ? (no2ug * 24.45 / 46.0).toFixed(0) : 0;   // NO₂
+  const so2Ppb = so2ug > 0 ? (so2ug * 24.45 / 64.0).toFixed(0) : 0;   // SO₂
   // CO en ppm
   const coPpm  = coug  > 0 ? (coug  * 24.45 / 28000).toFixed(2) : 0;
 
@@ -1799,10 +1799,10 @@
     ],
     ["PM₂.₅", `${pm25.toFixed(1)} µg/m³`],
     ["PM₁₀", `${pm10.toFixed(1)} µg/m³`],
-    ["O₃",   o3Ppb ? `${o3Ppb} ppb` : "<1 ppb"],
-    ["NO₂",  no2Ppb ? `${no2Ppb} ppb` : "<1 ppb"],
-    ["SO₂",  so2Ppb ? `${so2Ppb} ppb` : "<1 ppb"],
-    ["CO",   coPpm  ? `${coPpm} ppm` : "<0.01 ppm`"]
+    ["O₃",   o3Ppb  ? `${o3Ppb} ppb`   : "<1 ppb"],
+    ["NO₂",  no2Ppb ? `${no2Ppb} ppb`  : "<1 ppb"],
+    ["SO₂",  so2Ppb ? `${so2Ppb} ppb`  : "<1 ppb"],
+    ["CO",   coPpm  ? `${coPpm} ppm`   : "<0.01 ppm"]
   ];
 
   rows.forEach(([l, v]) => {
@@ -1921,6 +1921,7 @@
   </script>
 </body>
 </html>
+
 
 
 
