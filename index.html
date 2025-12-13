@@ -2076,46 +2076,44 @@ function renderAirQualityMulti({ ow, bz, atmo, commune }) {
         tbody.appendChild(tr);
       }
     }
+function renderStormRisk(omData) {
+  const div = document.getElementById("stormContent");
+  if (!div) return;
 
-    function renderStormRisk(omData) {
-      const div = document.getElementById("stormContent");
-      if (!omData) {
-        div.textContent = "Données Open-Meteo indisponibles.";
-        return;
-      }
+  if (!omData) {
+    div.textContent = "Données Open-Meteo indisponibles.";
+    return;
+  }
 
-      const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
-      const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
+  const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
+  const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
 
-      let niveau = "Faible";
-      if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
-      else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
-      else if (maxVal > 1500) niveau = "Fort";
+  let niveau = "Faible";
+  if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
+  else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
+  else if (maxVal > 1500) niveau = "Fort";
 
-      let riskClass = "storm-low";
-      if (niveau === "Modéré") riskClass = "storm-moderate";
-      else if (niveau === "Marqué") riskClass = "storm-marked";
-      else if (niveau === "Fort") riskClass = "storm-strong";
+  let riskClass = "storm-low";
+  if (niveau === "Modéré") riskClass = "storm-moderate";
+  else if (niveau === "Marqué") riskClass = "storm-marked";
+  else if (niveau === "Fort") riskClass = "storm-strong";
 
-      div.innerHTML = "";
+  div.innerHTML = "";
 
-      const rows = [
-        ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
-        ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
-        [
-          "Risque orageux (simple)",
-          `<span class="storm-badge ${riskClass}">${niveau}</span>`
-        ]
-      ];
+  const rows = [
+    ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
+    ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
+    ["Risque orageux (simple)", `<span class="storm-badge ${riskClass}">${niveau}</span>`]
+  ];
 
-      rows.forEach(([l, v]) => {
-        const row = document.createElement("div");
-        row.className = "storm-row";
-        row.innerHTML =
-          `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
-        div.appendChild(row);
-      });
-    }
+  rows.forEach(([l, v]) => {
+    const row = document.createElement("div");
+    row.className = "storm-row";
+    row.innerHTML = `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
+    div.appendChild(row);
+  });
+}
+
 
     // ------------- CHARGEMENT GLOBAL -------------
 
