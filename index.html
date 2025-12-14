@@ -43,13 +43,8 @@
       transition: background 0.8s ease, font-size 0.3s ease;
     }
 
-    body.day-theme {
-      background: var(--bg-main-day);
-    }
-
-    body.compact {
-      font-size: 0.9rem;
-    }
+    body.day-theme { background: var(--bg-main-day); }
+    body.compact { font-size: 0.9rem; }
 
     h1 {
       margin-bottom: 4px;
@@ -77,9 +72,7 @@
       gap: 10px;
     }
 
-    #locationTitle {
-      font-size: 0.95rem;
-    }
+    #locationTitle { font-size: 0.95rem; }
 
     .location-select {
       display: flex;
@@ -88,9 +81,7 @@
       flex-wrap: wrap;
     }
 
-    .location-select label {
-      font-size: 0.9rem;
-    }
+    .location-select label { font-size: 0.9rem; }
 
     .location-select select {
       background: rgba(7, 10, 22, 0.85);
@@ -129,9 +120,7 @@
       font-size: 0.85rem;
     }
 
-    .location-custom label {
-      opacity: 0.9;
-    }
+    .location-custom label { opacity: 0.9; }
 
     .location-custom input {
       background: rgba(7, 10, 22, 0.9);
@@ -143,9 +132,7 @@
       width: 90px;
     }
 
-    .location-custom input#nameInput {
-      width: 140px;
-    }
+    .location-custom input#nameInput { width: 140px; }
 
     .location-custom button {
       background: #2f7bd8;
@@ -157,14 +144,13 @@
       cursor: pointer;
     }
 
-    .location-custom button:hover {
-      filter: brightness(1.1);
-    }
+    .location-custom button:hover { filter: brightness(1.1); }
 
     .top-buttons {
       display: flex;
       flex-direction: column;
       gap: 4px;
+      align-items: flex-end;
     }
 
     .top-buttons-row {
@@ -186,16 +172,38 @@
     }
 
     .theme-toggle button:hover,
-    .layout-toggle button:hover {
-      filter: brightness(1.1);
+    .layout-toggle button:hover { filter: brightness(1.1); }
+
+    /* --- Statut & bouton cache --- */
+    .status-line {
+      font-size: 0.85rem;
+      color: #d0d7e5;
+      opacity: 0.95;
+      text-align: right;
+      max-width: 520px;
     }
 
-    /* Grille principale : 3 colonnes sur grand écran */
+    .status-ok { color: #b8f3c8; }
+    .status-warn { color: #ffd68a; }
+    .status-err { color: #ffb3b3; }
+
+    .cache-btn {
+      background: rgba(7, 10, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      color: #fff;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .cache-btn:hover { filter: brightness(1.1); }
+
+    /* Grille principale */
     .dashboard {
       max-width: 1600px;
       margin: 0 auto;
       display: grid;
-
       grid-template-columns: 2.1fr 1.2fr 1.1fr;
       grid-template-areas:
         "radar    radar    atm"
@@ -207,14 +215,11 @@
         "history  summary  miniradar"
         "sun      alerts   miniradar"
         "airsmart airsmart airsmart";
-
       gap: 18px;
       transition: gap 0.3s ease;
     }
 
-    body.compact .dashboard {
-      gap: 10px;
-    }
+    body.compact .dashboard { gap: 10px; }
 
     .card {
       background: var(--card-bg-night);
@@ -230,9 +235,7 @@
       border-color: var(--card-border-day);
     }
 
-    body.compact .card {
-      padding: 10px 12px;
-    }
+    body.compact .card { padding: 10px 12px; }
 
     .card-header {
       display: flex;
@@ -250,12 +253,9 @@
       letter-spacing: 0.02em;
     }
 
-    .card-header small {
-      color: #9ba6c3;
-      font-size: 0.8rem;
-    }
+    .card-header small { color: #9ba6c3; font-size: 0.8rem; }
 
-    /* Placement des cartes dans la grille */
+    /* Placement des cartes */
     #radarCard    { grid-area: radar; }
     #atmCard      { grid-area: atm; font-size: 0.85rem; }
     #rainCard     { grid-area: rain; }
@@ -272,10 +272,7 @@
     #stormCard    { grid-area: storms; }
     #miniRadarCard{ grid-area: miniradar; }
 
-    /* IMPORTANT : on inverse les zones pour obtenir :
-       - AirSmart à la place de Résumé (zone summary)
-       - Résumé tout en bas (zone airsmart)
-    */
+    /* inversion zones (comme ton V3+) */
     #airSmartCard { grid-area: summary; }
     #summaryCard  { grid-area: airsmart; }
 
@@ -328,25 +325,10 @@
       font-weight: 500;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    th, td {
-      padding: 6px 4px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      text-align: left;
-    }
-
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 6px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); text-align: left; }
     table thead tr { background: rgba(255, 255, 255, 0.04); }
-
-    th {
-      font-weight: 600;
-      font-size: 0.92rem;
-      color: #f5f7ff;
-    }
+    th { font-weight: 600; font-size: 0.92rem; color: #f5f7ff; }
 
     .alerts-list { list-style: none; font-size: 0.9rem; }
     .alerts-list li {
@@ -383,7 +365,6 @@
       flex: 1 1 auto;
     }
 
-    /* Graph pluie & météogramme */
     #rainChart {
       width: 100%;
       height: 140px;
@@ -409,11 +390,7 @@
       margin-top: 4px;
     }
 
-    .error-text {
-      font-size: 0.9rem;
-      color: #ffb3b3;
-      margin-top: 6px;
-    }
+    .error-text { font-size: 0.9rem; color: #ffb3b3; margin-top: 6px; }
 
     .wind-compass { display: flex; align-items: center; gap: 12px; }
 
@@ -463,14 +440,8 @@
     .wind-labels { font-size: 0.85rem; color: #c3cbe0; }
     .history-table td { font-size: 0.85rem; }
 
-    #leafletMap {
-      width: 100%;
-      height: 230px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
+    #leafletMap { width: 100%; height: 230px; border-radius: 8px; overflow: hidden; }
 
-    /* Mode mobile / petit écran : une seule colonne */
     @media (max-width: 950px) {
       body { padding: 12px; }
 
@@ -489,18 +460,19 @@
           "sun"
           "alerts"
           "aqi"
-          "summary"     /* AirSmart à la place du Résumé */
+          "summary"
           "storms"
           "miniradar"
           "history"
-          "airsmart";   /* Résumé tout en bas */
+          "airsmart";
       }
 
       .current-temp { font-size: 2.1rem; }
       body.compact .current-temp { font-size: 1.8rem; }
+      .status-line { text-align: left; }
+      .top-buttons { align-items: flex-start; }
     }
 
-    /* AQI badge (fond coloré) */
     .aqi-badge {
       padding: 4px 10px;
       border-radius: 8px;
@@ -515,7 +487,6 @@
     .aqi-poor      { background-color: #e67e22; }
     .aqi-very-poor { background-color: #e74c3c; }
 
-    /* Badge risque orageux */
     .storm-badge {
       padding: 4px 10px;
       border-radius: 8px;
@@ -529,7 +500,6 @@
     .storm-marked   { background-color: #e67e22; }
     .storm-strong   { background-color: #e74c3c; }
 
-    /* Style pour la carte "lecture intelligente" */
     .air-tip {
       margin-top: 8px;
       padding: 10px 12px;
@@ -556,6 +526,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="topBar">
     <div id="topRow">
@@ -573,6 +544,7 @@
 
       <div class="top-buttons">
         <div class="top-buttons-row">
+          <button id="clearCacheBtn" class="cache-btn" type="button">🧹 Vider cache</button>
           <div class="theme-toggle">
             <button id="themeToggleBtn" type="button">Thème : Auto</button>
           </div>
@@ -580,6 +552,7 @@
             <button id="layoutToggleBtn" type="button">Mode : Large</button>
           </div>
         </div>
+        <div id="statusLine" class="status-line status-warn">Statut : en attente…</div>
       </div>
     </div>
 
@@ -596,19 +569,14 @@
   </div>
 
   <main class="dashboard">
-    <!-- Radar principal -->
     <section class="card" id="radarCard">
       <div class="card-header">
         <h2>Radar local</h2>
         <small id="radarModeLabel">Windy – radar météo (dBZ)</small>
       </div>
       <div class="radar-toggle-bar">
-        <button type="button" id="btnRadarMode" class="radar-toggle-btn radar active">
-          Radar météo
-        </button>
-        <button type="button" id="btnRainMode" class="radar-toggle-btn rain">
-          Pluie (mm/h)
-        </button>
+        <button type="button" id="btnRadarMode" class="radar-toggle-btn radar active">Radar météo</button>
+        <button type="button" id="btnRainMode" class="radar-toggle-btn rain">Pluie (mm/h)</button>
       </div>
       <div class="radar-container">
         <iframe id="radarFrame" loading="lazy" allowfullscreen></iframe>
@@ -616,7 +584,6 @@
       <p class="summary-text" id="radarSummary"></p>
     </section>
 
-    <!-- Paramètres atmos -->
     <section class="card" id="atmCard">
       <div class="card-header">
         <h2>Paramètres atmosphériques</h2>
@@ -625,7 +592,6 @@
       <div id="atmContent"></div>
     </section>
 
-    <!-- Situation actuelle -->
     <section class="card" id="currentCard">
       <div class="current-main" id="currentMain"></div>
       <div>
@@ -634,7 +600,6 @@
       </div>
     </section>
 
-    <!-- Pluie dans l’heure -->
     <section class="card" id="rainCard">
       <div class="card-header">
         <h2>Pluie dans l’heure</h2>
@@ -645,7 +610,6 @@
       <p class="error-text" id="rainError"></p>
     </section>
 
-    <!-- Météogramme 24 h -->
     <section class="card" id="temp24Card">
       <div class="card-header">
         <h2>Météogramme 24 h</h2>
@@ -654,7 +618,6 @@
       <canvas id="temp24Chart"></canvas>
     </section>
 
-    <!-- Prévision courte & quotidienne -->
     <section class="card" id="forecastCard">
       <div class="card-header">
         <h2>Prévision courte &amp; quotidienne</h2>
@@ -685,7 +648,6 @@
       </table>
     </section>
 
-    <!-- Vent -->
     <section class="card" id="windCard">
       <div class="card-header">
         <h2>Vent</h2>
@@ -703,11 +665,10 @@
       </div>
     </section>
 
-    <!-- Comparaison modèles -->
     <section class="card" id="compareCard">
       <div class="card-header">
         <h2>Comparaison modèles</h2>
-        <small>OpenWeather vs Météo-France (AROME/ARPEGE)</small>
+        <small>OpenWeather vs Open-Meteo</small>
       </div>
       <table id="compareTable">
         <thead>
@@ -722,7 +683,6 @@
       </table>
     </section>
 
-    <!-- Carte Leaflet -->
     <section class="card" id="mapCard">
       <div class="card-header">
         <h2>Carte météo locale</h2>
@@ -731,7 +691,6 @@
       <div id="leafletMap"></div>
     </section>
 
-    <!-- Soleil & Lune -->
     <section class="card" id="sunCard">
       <div class="card-header">
         <h2>Soleil &amp; Lune</h2>
@@ -740,7 +699,6 @@
       <div id="sunMoonBlock"></div>
     </section>
 
-    <!-- Alertes -->
     <section class="card" id="alertsCard">
       <div class="card-header">
         <h2>Alertes</h2>
@@ -748,7 +706,6 @@
       <ul class="alerts-list" id="alertsList"></ul>
     </section>
 
-    <!-- Qualité de l'air -->
     <section class="card" id="aqiCard">
       <div class="card-header">
         <h2>Qualité de l'air</h2>
@@ -757,16 +714,14 @@
       <div id="aqiContent"></div>
     </section>
 
-    <!-- Orages & instabilité -->
     <section class="card" id="stormCard">
       <div class="card-header">
         <h2>Orages & instabilité</h2>
-        <small>Indice simple (Open-Meteo / Météo-France)</small>
+        <small>Indice simple (Open-Meteo)</small>
       </div>
       <div id="stormContent"></div>
     </section>
 
-    <!-- Radar mini -->
     <section class="card" id="miniRadarCard">
       <div class="card-header">
         <h2>Radar mini</h2>
@@ -777,7 +732,6 @@
       </div>
     </section>
 
-    <!-- Historique -->
     <section class="card" id="historyCard">
       <div class="card-header">
         <h2>Historique de session</h2>
@@ -795,7 +749,6 @@
       </table>
     </section>
 
-    <!-- Air – lecture intelligente (à la place du Résumé) -->
     <section class="card" id="airSmartCard">
       <div class="card-header">
         <h2>Air – lecture intelligente</h2>
@@ -804,7 +757,6 @@
       <div id="airSmartContent"></div>
     </section>
 
-    <!-- Résumé (tout en bas) -->
     <section class="card" id="summaryCard">
       <div class="card-header">
         <h2>Résumé</h2>
@@ -817,9 +769,15 @@
   <script>
     // ------------- CONFIG -------------
     const API_KEY = "10afa751c6a2b85e16dcf699a9392307";
-    // BreezoMeter (optionnel)
-    const BREEZO_API_KEY = ""; // <-- colle ta clé ici, sinon laisse vide
+    const BREEZO_API_KEY = ""; // optionnel
     const OPENMETEO_BASE = "https://api.open-meteo.com/v1/meteofrance";
+
+    // TTL cache
+    const TTL_OW_CURRENT_MS  = 5  * 60 * 1000;   // 5 min
+    const TTL_OW_AIR_MS      = 5  * 60 * 1000;   // 5 min
+    const TTL_OW_FORECAST_MS = 15 * 60 * 1000;   // 15 min
+    const TTL_OPENMETEO_MS   = 15 * 60 * 1000;   // 15 min
+    const TTL_INSEE_MS       = 30 * 24 * 60 * 60 * 1000; // 30 jours
 
     const BASE_LOCATIONS = {
       flers: { name: "Flers", lat: 48.75, lon: -0.57, base: true },
@@ -836,6 +794,11 @@
     const STORAGE_THEME_MODE = "meteo_v3_theme_mode";
     const STORAGE_LAYOUT_MODE = "meteo_v3_layout_mode";
 
+    // caches
+    const STORAGE_CACHE = "meteo_v3_cache_blob";  // OW/OpenMeteo
+    const STORAGE_INSEE = "meteo_v3_insee_cache"; // INSEE par lieu
+    const STORAGE_ATMO  = "meteo_v3_atmo_cache";  // ATMO par lieu+date
+
     let customLocations = [];
     let LOCATIONS = {};
     let locationOrder = [];
@@ -850,10 +813,11 @@
 
     let leafletMap = null;
     let leafletMarker = null;
-    const GEO_KEY = "geo_current"; // lieu spécial pour la géolocalisation
+    const GEO_KEY = "geo_current";
+
+    let refreshTimer = null;
 
     // ------------- OUTILS -------------
-
     function formatTimeHMFromDate(d) {
       const h = d.getHours().toString().padStart(2, "0");
       const m = d.getMinutes().toString().padStart(2, "0");
@@ -887,8 +851,53 @@
       return Td;
     }
 
-    // ------------- LOCALSTORAGE -------------
+    // --------- statut ----------
+    function setStatus(type, msg) {
+      const el = document.getElementById("statusLine");
+      if (!el) return;
+      el.classList.remove("status-ok", "status-warn", "status-err");
+      if (type === "ok") el.classList.add("status-ok");
+      else if (type === "err") el.classList.add("status-err");
+      else el.classList.add("status-warn");
+      el.textContent = msg;
+    }
 
+    // --------- stockage JSON ----------
+    function loadJson(key) {
+      try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
+    }
+    function saveJson(key, val) {
+      try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+    }
+
+    // --------- cache générique ----------
+    function getCacheBlob() { return loadJson(STORAGE_CACHE) || {}; }
+    function setCacheBlob(blob) { saveJson(STORAGE_CACHE, blob); }
+
+    function cacheGet(cacheKey, ttlMs) {
+      const blob = getCacheBlob();
+      const entry = blob[cacheKey];
+      if (!entry) return null;
+      if (!entry.t || (Date.now() - entry.t) > ttlMs) return null;
+      return entry.v ?? null;
+    }
+
+    function cacheSet(cacheKey, value) {
+      const blob = getCacheBlob();
+      blob[cacheKey] = { t: Date.now(), v: value };
+      setCacheBlob(blob);
+    }
+
+    function clearAllCaches() {
+      try {
+        localStorage.removeItem(STORAGE_CACHE);
+        localStorage.removeItem(STORAGE_INSEE);
+        localStorage.removeItem(STORAGE_ATMO);
+      } catch {}
+      setStatus("ok", `Cache vidé à ${formatTimeHMFromDate(new Date())}. Rechargement…`);
+    }
+
+    // ------------- LOCALSTORAGE -------------
     function loadCustomLocations() {
       try {
         const raw = localStorage.getItem(STORAGE_CUSTOM);
@@ -899,9 +908,7 @@
     }
 
     function saveCustomLocations() {
-      try {
-        localStorage.setItem(STORAGE_CUSTOM, JSON.stringify(customLocations));
-      } catch {}
+      try { localStorage.setItem(STORAGE_CUSTOM, JSON.stringify(customLocations)); } catch {}
     }
 
     function loadCurrentLocationKey() {
@@ -912,9 +919,7 @@
     }
 
     function saveCurrentLocationKey() {
-      try {
-        localStorage.setItem(STORAGE_CURRENT, currentLocationKey);
-      } catch {}
+      try { localStorage.setItem(STORAGE_CURRENT, currentLocationKey); } catch {}
     }
 
     function loadRadarMode() {
@@ -925,9 +930,7 @@
     }
 
     function saveRadarMode() {
-      try {
-        localStorage.setItem(STORAGE_RADAR_MODE, radarMode);
-      } catch {}
+      try { localStorage.setItem(STORAGE_RADAR_MODE, radarMode); } catch {}
     }
 
     function loadThemeMode() {
@@ -938,9 +941,7 @@
     }
 
     function saveThemeMode() {
-      try {
-        localStorage.setItem(STORAGE_THEME_MODE, themeMode);
-      } catch {}
+      try { localStorage.setItem(STORAGE_THEME_MODE, themeMode); } catch {}
     }
 
     function loadLayoutMode() {
@@ -951,13 +952,10 @@
     }
 
     function saveLayoutMode() {
-      try {
-        localStorage.setItem(STORAGE_LAYOUT_MODE, compactMode ? "compact" : "large");
-      } catch {}
+      try { localStorage.setItem(STORAGE_LAYOUT_MODE, compactMode ? "compact" : "large"); } catch {}
     }
 
     // ------------- LIEUX -------------
-
     function rebuildLocations() {
       LOCATIONS = {};
       locationOrder = [];
@@ -981,9 +979,7 @@
         opt.textContent = loc.name;
         select.appendChild(opt);
       });
-      if (!LOCATIONS[currentLocationKey]) {
-        currentLocationKey = locationOrder[0] || "flers";
-      }
+      if (!LOCATIONS[currentLocationKey]) currentLocationKey = locationOrder[0] || "flers";
       select.value = currentLocationKey;
       updateDeleteButtonState();
     }
@@ -998,8 +994,8 @@
       const nameInput = document.getElementById("nameInput");
       const latInput = document.getElementById("latInput");
       const lonInput = document.getElementById("lonInput");
-      const lat = parseFloat(latInput.value.replace(",", "."));
-      const lon = parseFloat(lonInput.value.replace(",", "."));
+      const lat = parseFloat(String(latInput.value).replace(",", "."));
+      const lon = parseFloat(String(lonInput.value).replace(",", "."));
       if (Number.isNaN(lat) || Number.isNaN(lon)) {
         alert("Latitude ou longitude invalide.");
         return;
@@ -1046,15 +1042,10 @@
     // ------------- GEOLOCALISATION -------------
     function applyGeoLocation(lat, lon) {
       const name = "Ma position";
-
       const idx = customLocations.findIndex(l => l.key === GEO_KEY);
       const locObj = { key: GEO_KEY, name, lat, lon };
-
-      if (idx !== -1) {
-        customLocations[idx] = locObj;
-      } else {
-        customLocations.push(locObj);
-      }
+      if (idx !== -1) customLocations[idx] = locObj;
+      else customLocations.push(locObj);
 
       saveCustomLocations();
       rebuildLocations();
@@ -1078,25 +1069,16 @@
       }
 
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          applyGeoLocation(lat, lon);
-        },
+        (pos) => applyGeoLocation(pos.coords.latitude, pos.coords.longitude),
         (err) => {
           console.error(err);
           alert("Impossible de récupérer la position : " + err.message);
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 600000
-        }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 }
       );
     }
 
     // ------------- THEME & LAYOUT -------------
-
     function applyTheme(sunInfo) {
       const body = document.body;
       const btn = document.getElementById("themeToggleBtn");
@@ -1114,6 +1096,7 @@
 
       btn.textContent = "Thème : Auto";
       if (!sunInfo || sunInfo.sunriseUnix == null || sunInfo.sunsetUnix == null) return;
+
       const now = new Date();
       const isDay = now.getTime() >= sunInfo.sunriseUnix * 1000 &&
                     now.getTime() <= sunInfo.sunsetUnix * 1000;
@@ -1122,13 +1105,9 @@
     }
 
     function toggleThemeMode() {
-      if (themeMode === "auto") {
-        themeMode = "day";
-      } else if (themeMode === "day") {
-        themeMode = "night";
-      } else {
-        themeMode = "auto";
-      }
+      if (themeMode === "auto") themeMode = "day";
+      else if (themeMode === "day") themeMode = "night";
+      else themeMode = "auto";
       saveThemeMode();
       applyTheme(lastSunInfo);
     }
@@ -1152,7 +1131,6 @@
     }
 
     // ------------- RADAR -------------
-
     function updateRadarToggleUI() {
       const btnRadar = document.getElementById("btnRadarMode");
       const btnRain = document.getElementById("btnRainMode");
@@ -1187,7 +1165,7 @@
       const loc = LOCATIONS[currentLocationKey];
       if (!loc) return;
       const radarFrame = document.getElementById("radarFrame");
-      let overlayPart = radarMode === "radar" ? "&overlay=radar" : "&overlay=rain&product=ecmwf";
+      const overlayPart = radarMode === "radar" ? "&overlay=radar" : "&overlay=rain&product=ecmwf";
       radarFrame.src = buildWindyUrl(loc, 8, overlayPart);
       updateRadarToggleUI();
     }
@@ -1205,7 +1183,6 @@
     }
 
     // ------------- LEAFLET -------------
-
     function initLeafletMap() {
       if (leafletMap) return;
       leafletMap = L.map("leafletMap").setView([48.75, -0.57], 7);
@@ -1222,8 +1199,7 @@
       leafletMarker.setLatLng([loc.lat, loc.lon]);
     }
 
-    // ------------- CONSTRUCTION DES DONNÉES -------------
-
+    // ------------- CONSTRUCTION DONNÉES -------------
     function buildRainTimelineFromForecast(list) {
       if (!Array.isArray(list) || list.length < 2) {
         return { peak: 0, timeline: [0,0,0,0,0,0,0], nextRain: null, endRain: null };
@@ -1245,10 +1221,7 @@
       const peak = Math.max(...values, 0);
       let first = -1, last = -1;
       for (let i = 0; i < values.length; i++) {
-        if (values[i] > 0.1) {
-          if (first === -1) first = i;
-          last = i;
-        }
+        if (values[i] > 0.1) { if (first === -1) first = i; last = i; }
       }
       const now = new Date();
       let nextRain = null, endRain = null;
@@ -1288,15 +1261,8 @@
 
     function buildSunInfo(sys) {
       if (!sys) {
-        return {
-          sunrise: "—",
-          sunset: "—",
-          sunriseUnix: null,
-          sunsetUnix: null,
-          golden_hour_evening: ["—","—"],
-          blue_hour_evening: ["—","—"],
-          moon_phase: "Non disponible"
-        };
+        return { sunrise: "—", sunset: "—", sunriseUnix: null, sunsetUnix: null,
+          golden_hour_evening: ["—","—"], blue_hour_evening: ["—","—"], moon_phase: "Non disponible" };
       }
       const sunrise = toHMFromUnix(sys.sunrise);
       const sunriseUnix = sys.sunrise;
@@ -1326,17 +1292,12 @@
           ? (current.wind.speed * 3.6).toFixed(1) : "—";
         const windDir = current.wind && typeof current.wind.deg === "number"
           ? degToCardinal(current.wind.deg) : "—";
-        parts.push(
-          `Actuellement à ${locationName}, ${desc}, ${temp.toFixed(1)} °C, vent ${windSp} km/h de ${windDir}.`
-        );
+        parts.push(`Actuellement à ${locationName}, ${desc}, ${temp.toFixed(1)} °C, vent ${windSp} km/h de ${windDir}.`);
       }
       if (rainInfo && rainInfo.peak > 0.1) {
         const next = rainInfo.nextRain ? formatTimeHMFromDate(rainInfo.nextRain) : "bientôt";
         const end  = rainInfo.endRain ? formatTimeHMFromDate(rainInfo.endRain) : "dans les prochaines heures";
-        parts.push(
-          `Les prochaines heures (échelle 1 h, modèle OpenWeather) montrent un risque de pluie à partir de ${next}, ` +
-          `avec une intensité maximale estimée autour de ${rainInfo.peak.toFixed(1)} mm/h, se terminant vers ${end}.`
-        );
+        parts.push(`Signal lissé (3 h → 1 h, OpenWeather) : pluie possible vers ${next}, pic ~${rainInfo.peak.toFixed(1)} mm/h, fin vers ${end}.`);
       } else {
         parts.push("Les prochaines heures ne montrent pas de pluie significative d'après la prévision 3 h OpenWeather.");
       }
@@ -1356,9 +1317,8 @@
         const m = (d.getMonth() + 1).toString().padStart(2, "0");
         const day = d.getDate().toString().padStart(2, "0");
         const key = `${y}-${m}-${day}`;
-        if (!byDay[key]) {
-          byDay[key] = { date: d, tmin: e.main.temp, tmax: e.main.temp, rain: 0 };
-        } else {
+        if (!byDay[key]) byDay[key] = { date: d, tmin: e.main.temp, tmax: e.main.temp, rain: 0 };
+        else {
           byDay[key].tmin = Math.min(byDay[key].tmin, e.main.temp);
           byDay[key].tmax = Math.max(byDay[key].tmax, e.main.temp);
         }
@@ -1374,23 +1334,37 @@
       return { days };
     }
 
-    // ------------- APPELS API -------------
+    // ------------- APIS + CACHE -------------
+    async function fetchOWCurrent(loc) {
+      const cacheKey = `ow_current_${currentLocationKey}`;
+      const cached = cacheGet(cacheKey, TTL_OW_CURRENT_MS);
+      if (cached) return cached;
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}&units=metric&lang=fr&appid=${API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Erreur API météo actuelle : " + res.status);
+      const j = await res.json();
+      cacheSet(cacheKey, j);
+      return j;
+    }
+
+    async function fetchOWForecast(loc) {
+      const cacheKey = `ow_forecast_${currentLocationKey}`;
+      const cached = cacheGet(cacheKey, TTL_OW_FORECAST_MS);
+      if (cached) return cached;
+
+      const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${loc.lat}&lon=${loc.lon}&units=metric&lang=fr&appid=${API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Erreur API prévision : " + res.status);
+      const j = await res.json();
+      cacheSet(cacheKey, j);
+      return j;
+    }
 
     async function fetchWeatherForLocation(loc) {
-      if (!API_KEY || API_KEY === "VOTRE_CLE_API_OPENWEATHER_ICI") {
-        throw new Error("Clé API OpenWeather manquante ou non configurée.");
-      }
-      const urlCurrent =
-        `https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}` +
-        `&units=metric&lang=fr&appid=${API_KEY}`;
-      const urlForecast =
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${loc.lat}&lon=${loc.lon}` +
-        `&units=metric&lang=fr&appid=${API_KEY}`;
-      const [resCur, resFc] = await Promise.all([fetch(urlCurrent), fetch(urlForecast)]);
-      if (!resCur.ok) throw new Error("Erreur API météo actuelle : " + resCur.status);
-      if (!resFc.ok) throw new Error("Erreur API prévision : " + resFc.status);
-      const current = await resCur.json();
-      const forecast = await resFc.json();
+      if (!API_KEY) throw new Error("Clé API OpenWeather manquante.");
+
+      const [current, forecast] = await Promise.all([fetchOWCurrent(loc), fetchOWForecast(loc)]);
       const rainInfo = buildRainTimelineFromForecast(forecast.list || []);
       const shortForecast = buildShortForecast(forecast.list || []);
       const temp24 = buildTemp24(forecast.list || []);
@@ -1406,6 +1380,7 @@
       return {
         location: loc,
         current,
+        forecast,
         rain_info: rainInfo,
         short_term_forecast: shortForecast,
         sun_moon: sunInfo,
@@ -1417,15 +1392,18 @@
     }
 
     async function fetchAirQuality(loc) {
-      const url =
-        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${loc.lat}&lon=${loc.lon}` +
-        `&appid=${API_KEY}`;
+      const cacheKey = `ow_air_${currentLocationKey}`;
+      const cached = cacheGet(cacheKey, TTL_OW_AIR_MS);
+      if (cached) return cached;
+
+      const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${loc.lat}&lon=${loc.lon}&appid=${API_KEY}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Erreur API qualité de l'air : " + res.status);
-      return res.json();
+      const j = await res.json();
+      cacheSet(cacheKey, j);
+      return j;
     }
 
-    // --------- BreezoMeter (optionnel) ----------
     async function fetchBreezoMeterAirQuality(loc) {
       if (!BREEZO_API_KEY) return null;
       const url = new URL("https://api.breezometer.com/air-quality/v2/current-conditions");
@@ -1439,7 +1417,6 @@
       return res.json();
     }
 
-    // --------- Atmo Data (France) ----------
     function getLocalISODate() {
       const d = new Date();
       const y = d.getFullYear();
@@ -1463,10 +1440,7 @@
 
     async function fetchAtmoIndiceATMO(codeINSEE, dateISO) {
       if (!codeINSEE) return null;
-      const filter = {
-        code_zone: { operator: "=", value: codeINSEE },
-        date_ech:  { operator: "=", value: dateISO }
-      };
+      const filter = { code_zone: { operator: "=", value: codeINSEE }, date_ech: { operator: "=", value: dateISO } };
       const url = `https://admindata.atmo-france.org/api/data/112/${encodeURIComponent(JSON.stringify(filter))}?withGeom=false`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Erreur Atmo Data : " + res.status);
@@ -1476,12 +1450,17 @@
     }
 
     async function fetchOpenMeteo(loc) {
+      const cacheKey = `om_${currentLocationKey}`;
+      const cached = cacheGet(cacheKey, TTL_OPENMETEO_MS);
+      if (cached) return cached;
+
       const url =
         `${OPENMETEO_BASE}?latitude=${loc.lat}&longitude=${loc.lon}` +
         "&hourly=temperature_2m,precipitation,cape&forecast_days=3&timezone=auto";
       const res = await fetch(url);
       if (!res.ok) throw new Error("Erreur API Open-Meteo : " + res.status);
       const j = await res.json();
+
       const h = j.hourly || {};
       const times = h.time || [];
       const temps = h.temperature_2m || [];
@@ -1506,24 +1485,29 @@
         if (val > capeMax12h) capeMax12h = val;
       }
 
-      return { raw: j, nextHours, capeNow, capeMax12h };
+      const out = { raw: j, nextHours, capeNow, capeMax12h };
+      cacheSet(cacheKey, out);
+      return out;
     }
 
     // ------------- RENDUS -------------
-
     function renderCurrent(data) {
       const loc = data.location;
       const cur = data.current;
+
       document.getElementById("locationTitle").textContent =
         `Point suivi : ${loc.name} (${loc.lat.toFixed(2)}, ${loc.lon.toFixed(2)})`;
+
       const desc = translateWeatherDesc(cur.weather[0].description);
       document.getElementById("currentMain").textContent = `Actuellement : ${desc}`;
       document.getElementById("currentTemp").textContent =
         cur.main.temp != null ? `${cur.main.temp.toFixed(1)}°C` : "—";
+
       const windKmh = cur.wind && typeof cur.wind.speed === "number"
         ? (cur.wind.speed * 3.6).toFixed(1) : "—";
       const windDir = cur.wind && typeof cur.wind.deg === "number"
         ? degToCardinal(cur.wind.deg) : "—";
+
       const nowStr = formatTimeHMFromDate(new Date());
       document.getElementById("currentExtra").textContent =
         `Vent ${windKmh} km/h de ${windDir} – Mise à jour ${nowStr}`;
@@ -1537,6 +1521,7 @@
       const rainInfo = data.rain_info || {};
       const values = rainInfo.timeline || [];
       const maxVal = values.length ? Math.max(...values, 1) : 1;
+
       const paddingLeft = 40, paddingRight = 15, paddingTop = 20, paddingBottom = 35;
       const w = canvas.width = canvas.clientWidth;
       const h = canvas.height = canvas.clientHeight;
@@ -1585,14 +1570,11 @@
 
       const summary = document.getElementById("rainSummary");
       if (!values.length || rainInfo.peak <= 0.1) {
-        summary.textContent =
-          "Pas de signal de pluie significative dans les prochaines heures (d’après la prévision 3 h OpenWeather).";
+        summary.textContent = "Pas de pluie significative attendue (prévision 3 h OpenWeather).";
       } else {
         const next = rainInfo.nextRain ? formatTimeHMFromDate(rainInfo.nextRain) : "bientôt";
         const end  = rainInfo.endRain ? formatTimeHMFromDate(rainInfo.endRain) : "dans les prochaines heures";
-        summary.textContent =
-          `Risque de pluie à partir de ${next}, fin probable vers ${end}. ` +
-          `Intensité maximale estimée : ${rainInfo.peak.toFixed(1)} mm/h (modèle OpenWeather).`;
+        summary.textContent = `Pluie possible dès ${next}, fin vers ${end}. Pic estimé : ${rainInfo.peak.toFixed(1)} mm/h (signal lissé).`;
       }
       document.getElementById("rainError").textContent = "";
     }
@@ -1604,9 +1586,11 @@
       const labels = data.temp24.labels || [];
       const rain = data.temp24.rain || [];
       if (!temps.length) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+
       const maxT = Math.max(...temps);
       const minT = Math.min(...temps);
       const maxRain = Math.max(...rain, 0);
+
       const padding = 35;
       const w = canvas.width = canvas.clientWidth;
       const h = canvas.height = canvas.clientHeight;
@@ -1630,7 +1614,6 @@
 
       if (maxRain > 0) {
         const maxBarH = innerH * 0.45;
-
         for (let i = 0; i < rain.length; i++) {
           const r = rain[i];
           if (!r || r <= 0) continue;
@@ -1639,7 +1622,6 @@
           const baseY = h - padding;
           const barH = (r / maxRain) * maxBarH;
           const barW = stepX * 0.4;
-
           const mmh = r / 3;
 
           let color = "rgba(0, 0, 80, 0.4)";
@@ -1788,11 +1770,9 @@
       if (rainInfo && rainInfo.peak > 0.1) {
         const next = rainInfo.nextRain ? formatTimeHMFromDate(rainInfo.nextRain) : "bientôt";
         const end  = rainInfo.endRain ? formatTimeHMFromDate(rainInfo.endRain) : "dans les prochaines heures";
-        p.textContent =
-          `La prévision interpolée (pas 1 h, OpenWeather) laisse envisager des précipitations à partir d’environ ${next}, se prolongeant jusqu’à ${end}.`;
+        p.textContent = `Signal lissé (3 h → 1 h) : pluie possible vers ${next}, jusqu’à ${end}.`;
       } else {
-        p.textContent =
-          "Le radar et la prévision ne montrent pas de précipitations marquées à proximité immédiate (modèle OpenWeather).";
+        p.textContent = "Le radar et la prévision ne montrent pas de précipitations marquées (OpenWeather).";
       }
     }
 
@@ -1804,10 +1784,8 @@
       const cur = data.current;
       const arrow = document.getElementById("windArrow");
       const labelsDiv = document.getElementById("windLabels");
-      const speedKmh = cur.wind && typeof cur.wind.speed === "number"
-        ? cur.wind.speed * 3.6 : null;
-      const dirDeg = cur.wind && typeof cur.wind.deg === "number"
-        ? cur.wind.deg : null;
+      const speedKmh = cur.wind && typeof cur.wind.speed === "number" ? cur.wind.speed * 3.6 : null;
+      const dirDeg = cur.wind && typeof cur.wind.deg === "number" ? cur.wind.deg : null;
       if (dirDeg != null) arrow.style.transform = `rotate(${dirDeg}deg)`;
       const dirCard = dirDeg != null ? degToCardinal(dirDeg) : "—";
       labelsDiv.innerHTML =
@@ -1820,8 +1798,7 @@
       const temp = cur.main && typeof cur.main.temp === "number" ? cur.main.temp : null;
       const windKmh = cur.wind && typeof cur.wind.speed === "number" ? cur.wind.speed * 3.6 : null;
       historyEntries.push({ time: new Date(), temp, windKmh });
-      if (historyEntries.length > 8)
-        historyEntries = historyEntries.slice(historyEntries.length - 8);
+      if (historyEntries.length > 8) historyEntries = historyEntries.slice(historyEntries.length - 8);
       const tbody = document.getElementById("historyBody");
       tbody.innerHTML = "";
       historyEntries.slice().reverse().forEach(e => {
@@ -1847,8 +1824,8 @@
     // ---------- AQI helpers ----------
     function aqiLevelToClass(level) {
       switch (level) {
-        case 1: return "aqi-fair";
-        case 2: return "aqi-good";
+        case 1: return "aqi-good";
+        case 2: return "aqi-fair";
         case 3: return "aqi-moderate";
         case 4: return "aqi-poor";
         case 5: return "aqi-very-poor";
@@ -1857,13 +1834,7 @@
     }
 
     function aqiLevelToLabel(level) {
-      const labelMap = {
-        1: "Très bon",
-        2: "Bon",
-        3: "Moyen",
-        4: "Mauvais",
-        5: "Très mauvais"
-      };
+      const labelMap = { 1: "Bon", 2: "Correct", 3: "Moyen", 4: "Mauvais", 5: "Très mauvais" };
       return labelMap[level] || "—";
     }
 
@@ -1909,9 +1880,7 @@
     function minMax(values) {
       const nums = values.filter(v => typeof v === "number" && Number.isFinite(v));
       if (!nums.length) return null;
-      const mn = Math.min(...nums);
-      const mx = Math.max(...nums);
-      return { mn, mx };
+      return { mn: Math.min(...nums), mx: Math.max(...nums) };
     }
 
     function formatRange(values, unit, decimals=1) {
@@ -1950,7 +1919,7 @@
         title = "Pas assez de données";
         posture = "Indéterminé";
         tips.push("Aucune source air exploitable sur cette mise à jour.");
-        tips.push("Si tu sais que l’air est sensible chez toi (bois, trafic, etc.), reste prudent et observe l’odeur / la brume.");
+        tips.push("Si l’air est sensible chez toi, reste prudent et observe odeurs / brume.");
         return { title, posture, tips, spread };
       }
 
@@ -1962,8 +1931,8 @@
       } else if (fusedLevel === 3) {
         title = "Air moyen";
         posture = "Prudence";
-        tips.push("Aération: plutôt courte et ciblée (5–10 min), évite si tu sens une odeur de fumée/échappement.");
-        tips.push("Sport intense dehors: à modérer si tu es sensible (asthme, irritation).");
+        tips.push("Aération: courte et ciblée (5–10 min), évite si odeur de fumée/échappement.");
+        tips.push("Sport intense dehors: à modérer si tu es sensible.");
       } else if (fusedLevel === 4) {
         title = "Air mauvais";
         posture = "Limiter";
@@ -1973,17 +1942,17 @@
         title = "Air très mauvais";
         posture = "À éviter";
         tips.push("Aération: minimise. Ferme si tu peux (surtout côté rue).");
-        tips.push("Évite l’effort dehors. Si tu dois sortir: parcours court, loin du trafic.");
+        tips.push("Évite l’effort dehors. Si tu dois sortir: court, loin du trafic.");
       }
 
-      if (windy) tips.push("Vent soutenu: ça aide souvent à disperser, surveille si l’indice baisse au prochain refresh.");
-      if (veryHumid) tips.push("Humidité élevée: l’air peut sembler plus lourd; aération courte mais efficace si besoin de renouveler.");
-      if (rainSoon) tips.push("Pluie/averses proches: ça peut “laver” une partie des particules, regarde l’évolution après la pluie.");
-      if (hasParticles && fusedLevel >= 3) tips.push("Si tu as un purificateur/filtration: c’est le moment de le faire tourner (mode normal, pas forcément à fond).");
-      if (typeof tempC === "number" && tempC <= 2 && fusedLevel <= 2) tips.push("Il fait froid: aération efficace mais brève, histoire de ne pas refroidir la maison.");
+      if (windy) tips.push("Vent soutenu: ça disperse souvent. Surveille si l’indice baisse au prochain refresh.");
+      if (veryHumid) tips.push("Humidité élevée: sensation d’air lourd. Aération courte mais efficace si besoin.");
+      if (rainSoon) tips.push("Pluie proche: ça peut laver une partie des particules. Regarde après la pluie.");
+      if (hasParticles && fusedLevel >= 3) tips.push("Filtration/purificateur: bon moment pour le faire tourner.");
+      if (typeof tempC === "number" && tempC <= 2 && fusedLevel <= 2) tips.push("Froid: aération brève mais efficace.");
 
-      if (spread >= 2) tips.push("Note: les sources ne racontent pas toutes la même histoire. Je garde le principe de prudence (pire niveau).");
-      else if (levels.length === 1) tips.push("Note: une seule source disponible. Interprétation à prendre avec recul.");
+      if (spread >= 2) tips.push("Note: sources pas d’accord. Fusion = prudence (pire niveau).");
+      else if (levels.length === 1) tips.push("Note: une seule source disponible. À interpréter avec recul.");
 
       return { title, posture, tips, spread };
     }
@@ -2043,7 +2012,6 @@
       div.appendChild(tipBox);
     }
 
-    // --------- AQI multi-sources + retour contexte ----------
     function renderAirQualityMulti({ ow, bz, atmo, commune }) {
       const div = document.getElementById("aqiContent");
       div.innerHTML = "";
@@ -2092,13 +2060,13 @@
       }
 
       const levels = [owLevel, bzLevel, atmoLevel].filter(v => v != null);
-      const fused = levels.length ? Math.max(...levels) : null;
+      const fused = levels.length ? Math.max(...levels) : null; // prudence
       const fusedLabel = fused ? aqiLevelToLabel(fused) : "—";
-      const fusedClass = aqiLevelToClass(fused || 2);
+      const fusedClass = aqiLevelToClass(fused || 1);
 
       const rowsTop = [
-        ["Indice global (fusion)", `<span class="aqi-badge ${fusedClass}">${fused ? fused : "—"} – ${fusedLabel}</span>`],
-        ["Détail", `OW ${owLevel ?? "—"} | BZ ${bzAqiText} | Atmo ${atmoLabel}${commune ? ` (${commune})` : ""}`]
+        ["Indice global (fusion prudence)", `<span class="aqi-badge ${fusedClass}">${fused ? fused : "—"} – ${fusedLabel}</span>`],
+        ["Détail", `OW ${owLevel ?? "—"} (${owLabel}) | BZ ${bzAqiText} | Atmo ${atmoLabel}${commune ? ` (${commune})` : ""}`]
       ];
 
       rowsTop.forEach(([l, v]) => {
@@ -2138,9 +2106,7 @@
         div.appendChild(row);
       });
 
-      const hasParticles =
-        [owPm25, owPm10, bzPm25, bzPm10].some(v => typeof v === "number" && Number.isFinite(v) && v > 0);
-
+      const hasParticles = [owPm25, owPm10, bzPm25, bzPm10].some(v => typeof v === "number" && Number.isFinite(v) && v > 0);
       return { fusedLevel: fused, fusedLabel, fusedClass, levels, hasParticles };
     }
 
@@ -2174,10 +2140,7 @@
       const div = document.getElementById("stormContent");
       if (!div) return;
 
-      if (!omData) {
-        div.textContent = "Données Open-Meteo indisponibles.";
-        return;
-      }
+      if (!omData) { div.textContent = "Données Open-Meteo indisponibles."; return; }
 
       const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
       const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
@@ -2193,7 +2156,6 @@
       else if (niveau === "Fort") riskClass = "storm-strong";
 
       div.innerHTML = "";
-
       const rows = [
         ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
         ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
@@ -2208,22 +2170,73 @@
       });
     }
 
-    // ------------- CHARGEMENT GLOBAL -------------
+    // ------------- INSEE + ATMO (cache) -------------
+    function getInseeCache() { return loadJson(STORAGE_INSEE) || {}; }
+    function setInseeCache(cache) { saveJson(STORAGE_INSEE, cache); }
+    function getAtmoCache() { return loadJson(STORAGE_ATMO) || {}; }
+    function setAtmoCache(cache) { saveJson(STORAGE_ATMO, cache); }
 
+    async function getCommuneAndAtmo(loc) {
+      const today = getLocalISODate();
+      const inseeCache = getInseeCache();
+      const atmoCache  = getAtmoCache();
+
+      let communeNom = null;
+      let atmoItem = null;
+
+      const inseeEntry = inseeCache[currentLocationKey] || null;
+      const freshInsee = inseeEntry && inseeEntry.t && (Date.now() - inseeEntry.t) < TTL_INSEE_MS;
+
+      let insee = freshInsee ? inseeEntry.v : null;
+
+      if (!insee) {
+        try {
+          const fetched = await fetchINSEEFromLatLon(loc);
+          if (fetched) {
+            insee = fetched;
+            inseeCache[currentLocationKey] = { t: Date.now(), v: fetched };
+            setInseeCache(inseeCache);
+          }
+        } catch { insee = null; }
+      }
+
+      if (insee) communeNom = insee.nom || null;
+
+      const atmoKey = `${currentLocationKey}_${today}`;
+      if (atmoCache[atmoKey] !== undefined) {
+        atmoItem = atmoCache[atmoKey];
+      } else if (insee && insee.code) {
+        try {
+          atmoItem = await fetchAtmoIndiceATMO(insee.code, today);
+          atmoCache[atmoKey] = atmoItem;
+          setAtmoCache(atmoCache);
+        } catch {
+          atmoItem = null;
+          atmoCache[atmoKey] = null; // on mémorise l'échec du jour pour éviter de marteler
+          setAtmoCache(atmoCache);
+        }
+      }
+
+      return { communeNom, atmoItem };
+    }
+
+    // ------------- CHARGEMENT GLOBAL -------------
     async function loadAndRender() {
       try {
-        const loc = LOCATIONS[currentLocationKey];
+        setStatus("warn", `Chargement… ${formatTimeHMFromDate(new Date())}`);
 
-        const [owRes, omRes, aqiRes, bzRes, inseeRes] = await Promise.allSettled([
+        const loc = LOCATIONS[currentLocationKey];
+        if (!loc) throw new Error("Lieu invalide.");
+
+        const [owRes, omRes, aqiRes, bzRes, inseeAtmoRes] = await Promise.allSettled([
           fetchWeatherForLocation(loc),
           fetchOpenMeteo(loc),
           fetchAirQuality(loc),
           fetchBreezoMeterAirQuality(loc),
-          fetchINSEEFromLatLon(loc)
+          getCommuneAndAtmo(loc)
         ]);
 
         if (owRes.status !== "fulfilled") throw owRes.reason;
-
         const owData = owRes.value;
 
         renderCurrent(owData);
@@ -2241,9 +2254,8 @@
         updateLeafletMap(loc);
 
         if (omRes.status === "fulfilled") {
-          const omData = omRes.value;
-          renderModelComparison(owData, omData);
-          renderStormRisk(omData);
+          renderModelComparison(owData, omRes.value);
+          renderStormRisk(omRes.value);
         } else {
           renderModelComparison(null, null);
           document.getElementById("stormContent").textContent = "Données Open-Meteo indisponibles.";
@@ -2252,16 +2264,10 @@
         const owAqi = (aqiRes.status === "fulfilled") ? aqiRes.value : null;
         const bzAqi = (bzRes.status === "fulfilled") ? bzRes.value : null;
 
-        let communeNom = null;
-        let atmoItem = null;
-        if (inseeRes.status === "fulfilled" && inseeRes.value) {
-          communeNom = inseeRes.value.nom || null;
-          try {
-            atmoItem = await fetchAtmoIndiceATMO(inseeRes.value.code, getLocalISODate());
-          } catch {
-            atmoItem = null;
-          }
-        }
+        const { communeNom, atmoItem } =
+          (inseeAtmoRes.status === "fulfilled" && inseeAtmoRes.value)
+            ? inseeAtmoRes.value
+            : { communeNom: null, atmoItem: null };
 
         let airCtx = null;
         if (owAqi || bzAqi || atmoItem) {
@@ -2272,15 +2278,24 @@
         }
 
         renderAirSmart(owData, airCtx);
-
         document.getElementById("globalError").textContent = "";
+
+        setStatus("ok", `Dernière mise à jour OK : ${formatTimeHMFromDate(new Date())}`);
       } catch (e) {
+        setStatus("err", `Échec de mise à jour : ${formatTimeHMFromDate(new Date())} (${e.message})`);
         renderError(e);
       }
     }
 
-    // ------------- INITIALISATION -------------
+    // ------------- AUTO REFRESH INTELLIGENT -------------
+    function startAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(() => {
+        if (!document.hidden) loadAndRender();
+      }, 5 * 60 * 1000);
+    }
 
+    // ------------- INITIALISATION -------------
     document.addEventListener("DOMContentLoaded", () => {
       loadCustomLocations();
       loadCurrentLocationKey();
@@ -2321,6 +2336,11 @@
       document.getElementById("themeToggleBtn").addEventListener("click", toggleThemeMode);
       document.getElementById("layoutToggleBtn").addEventListener("click", toggleLayoutMode);
 
+      document.getElementById("clearCacheBtn").addEventListener("click", () => {
+        clearAllCaches();
+        loadAndRender();
+      });
+
       initLeafletMap();
       updateRadarFrames();
       applyTheme(null);
@@ -2331,8 +2351,12 @@
         }).catch(() => {});
       }
 
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) loadAndRender();
+      });
+
       loadAndRender();
-      setInterval(loadAndRender, 5 * 60 * 1000);
+      startAutoRefresh();
     });
   </script>
 </body>
