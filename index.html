@@ -205,7 +205,8 @@
         "wind     wind     map"
         "compare  aqi      storms"
         "history  summary  miniradar"
-        "sun      alerts   miniradar";
+        "sun      alerts   miniradar"
+        "airsmart airsmart airsmart";
 
       gap: 18px;
       transition: gap 0.3s ease;
@@ -271,6 +272,7 @@
     #aqiCard      { grid-area: aqi; }
     #stormCard    { grid-area: storms; }
     #miniRadarCard{ grid-area: miniradar; }
+    #airSmartCard { grid-area: airsmart; }
 
     .current-main {
       font-size: 1rem;
@@ -380,20 +382,24 @@
       font-size: 0.9rem;
     }
 
-    .sun-row, .atm-row, .aqi-row, .storm-row {
+    .sun-row, .atm-row, .aqi-row, .storm-row, .air-row {
       display: flex;
       justify-content: space-between;
       font-size: 0.9rem;
       margin-bottom: 4px;
+      gap: 10px;
     }
 
-    .sun-label, .atm-label, .aqi-label, .storm-label {
+    .sun-label, .atm-label, .aqi-label, .storm-label, .air-label {
       color: #b3bdd8;
+      flex: 0 0 auto;
     }
 
-    .sun-value, .atm-value, .aqi-value, .storm-value {
+    .sun-value, .atm-value, .aqi-value, .storm-value, .air-value {
       font-weight: 500;
       color: #f6f7ff;
+      text-align: right;
+      flex: 1 1 auto;
     }
 
     /* Graph pluie & météogramme */
@@ -512,6 +518,7 @@
           "sun"
           "alerts"
           "aqi"
+          "airsmart"
           "storms"
           "miniradar"
           "history"
@@ -550,6 +557,32 @@
     .storm-moderate { background-color: #f1c40f; }  /* Modéré → jaune */
     .storm-marked   { background-color: #e67e22; }  /* Marqué → orange */
     .storm-strong   { background-color: #e74c3c; }  /* Fort → rouge */
+
+    /* Petit style pour la carte "lecture intelligente" */
+    .air-tip {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #dfe6ff;
+      line-height: 1.4;
+      font-size: 0.92rem;
+    }
+
+    .air-tip strong { color: #ffe38a; }
+
+    .air-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(7, 10, 22, 0.55);
+      color: #dfe6ff;
+      font-size: 0.82rem;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -753,6 +786,15 @@
       <div id="aqiContent"></div>
     </section>
 
+    <!-- Air – lecture intelligente (NOUVEAU) -->
+    <section class="card" id="airSmartCard">
+      <div class="card-header">
+        <h2>Air – lecture intelligente</h2>
+        <small>Conseils concrets selon l’indice & météo locale</small>
+      </div>
+      <div id="airSmartContent"></div>
+    </section>
+
     <!-- Orages & instabilité -->
     <section class="card" id="stormCard">
       <div class="card-header">
@@ -804,9 +846,9 @@
   <script>
     // ------------- CONFIG -------------
     const API_KEY = "10afa751c6a2b85e16dcf699a9392307";
-  // BreezoMeter (optionnel)
-  const BREEZO_API_KEY = ""; // <-- colle ta clé ici, sinon laisse vide
- // <-- ta clé OW
+    // BreezoMeter (optionnel)
+    const BREEZO_API_KEY = ""; // <-- colle ta clé ici, sinon laisse vide
+    // <-- ta clé OW
     const OPENMETEO_BASE = "https://api.open-meteo.com/v1/meteofrance";
 
     const BASE_LOCATIONS = {
@@ -1083,8 +1125,6 @@
         }
       );
     }
-
-
 
     // ------------- THEME & LAYOUT -------------
 
@@ -1431,59 +1471,59 @@
       return res.json();
     }
 
-    
-// --------- BreezoMeter (optionnel) ----------
-async function fetchBreezoMeterAirQuality(loc) {
-  if (!BREEZO_API_KEY) return null; // pas de clé => on ignore proprement
-  const url = new URL("https://api.breezometer.com/air-quality/v2/current-conditions");
-  url.searchParams.set("lat", loc.lat);
-  url.searchParams.set("lon", loc.lon);
-  url.searchParams.set("key", BREEZO_API_KEY);
-  url.searchParams.set("lang", "fr");
-  url.searchParams.set("features", "breezometer_aqi,pollutants_concentrations");
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error("Erreur API BreezoMeter : " + res.status);
-  return res.json();
-}
+    // --------- BreezoMeter (optionnel) ----------
+    async function fetchBreezoMeterAirQuality(loc) {
+      if (!BREEZO_API_KEY) return null; // pas de clé => on ignore proprement
+      const url = new URL("https://api.breezometer.com/air-quality/v2/current-conditions");
+      url.searchParams.set("lat", loc.lat);
+      url.searchParams.set("lon", loc.lon);
+      url.searchParams.set("key", BREEZO_API_KEY);
+      url.searchParams.set("lang", "fr");
+      url.searchParams.set("features", "breezometer_aqi,pollutants_concentrations");
+      const res = await fetch(url.toString());
+      if (!res.ok) throw new Error("Erreur API BreezoMeter : " + res.status);
+      return res.json();
+    }
 
-// --------- Atmo Data (France) ----------
-function getLocalISODate() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
+    // --------- Atmo Data (France) ----------
+    function getLocalISODate() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
 
-async function fetchINSEEFromLatLon(loc) {
-  const url = new URL("https://geo.api.gouv.fr/communes");
-  url.searchParams.set("lat", loc.lat);
-  url.searchParams.set("lon", loc.lon);
-  url.searchParams.set("fields", "code,nom");
-  url.searchParams.set("format", "json");
-  url.searchParams.set("geometry", "centre");
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error("Erreur geo.api.gouv.fr : " + res.status);
-  const arr = await res.json();
-  return (arr && arr[0]) ? arr[0] : null; // { code, nom }
-}
+    async function fetchINSEEFromLatLon(loc) {
+      const url = new URL("https://geo.api.gouv.fr/communes");
+      url.searchParams.set("lat", loc.lat);
+      url.searchParams.set("lon", loc.lon);
+      url.searchParams.set("fields", "code,nom");
+      url.searchParams.set("format", "json");
+      url.searchParams.set("geometry", "centre");
+      const res = await fetch(url.toString());
+      if (!res.ok) throw new Error("Erreur geo.api.gouv.fr : " + res.status);
+      const arr = await res.json();
+      return (arr && arr[0]) ? arr[0] : null; // { code, nom }
+    }
 
-// Indice ATMO (id_data=112) – voir Atmo Data / Atmo-France
-async function fetchAtmoIndiceATMO(codeINSEE, dateISO) {
-  if (!codeINSEE) return null;
-  const filter = {
-    code_zone: { operator: "=", value: codeINSEE },
-    date_ech:  { operator: "=", value: dateISO }
-  };
-  const url = `https://admindata.atmo-france.org/api/data/112/${encodeURIComponent(JSON.stringify(filter))}?withGeom=false`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Erreur Atmo Data : " + res.status);
-  const j = await res.json();
-  // API renvoie parfois un tableau directement
-  const item = Array.isArray(j) ? j[0] : (j?.data?.[0] ?? null);
-  return item || null;
-}
-async function fetchOpenMeteo(loc) {
+    // Indice ATMO (id_data=112) – voir Atmo Data / Atmo-France
+    async function fetchAtmoIndiceATMO(codeINSEE, dateISO) {
+      if (!codeINSEE) return null;
+      const filter = {
+        code_zone: { operator: "=", value: codeINSEE },
+        date_ech:  { operator: "=", value: dateISO }
+      };
+      const url = `https://admindata.atmo-france.org/api/data/112/${encodeURIComponent(JSON.stringify(filter))}?withGeom=false`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Erreur Atmo Data : " + res.status);
+      const j = await res.json();
+      // API renvoie parfois un tableau directement
+      const item = Array.isArray(j) ? j[0] : (j?.data?.[0] ?? null);
+      return item || null;
+    }
+
+    async function fetchOpenMeteo(loc) {
       const url =
         `${OPENMETEO_BASE}?latitude=${loc.lat}&longitude=${loc.lon}` +
         "&hourly=temperature_2m,precipitation,cape&forecast_days=3&timezone=auto";
@@ -1854,204 +1894,346 @@ async function fetchOpenMeteo(loc) {
         "Erreur lors de la récupération des données météo : " + err.message;
       document.getElementById("rainError").textContent =
         "Impossible d’afficher l’estimation de pluie.";
+      // On remplit aussi la carte "lecture intelligente" pour éviter le vide
+      const airDiv = document.getElementById("airSmartContent");
+      if (airDiv) airDiv.innerHTML = `<p class="error-text">Données air indisponibles (erreur de chargement).</p>`;
     }
 
-    
-function aqiLevelToClass(level) {
-  switch (level) {
-    case 1: return "aqi-fair";
-    case 2: return "aqi-good";
-    case 3: return "aqi-moderate";
-    case 4: return "aqi-poor";
-    case 5: return "aqi-very-poor";
-    default: return "aqi-good";
-  }
-}
+    function aqiLevelToClass(level) {
+      switch (level) {
+        case 1: return "aqi-fair";
+        case 2: return "aqi-good";
+        case 3: return "aqi-moderate";
+        case 4: return "aqi-poor";
+        case 5: return "aqi-very-poor";
+        default: return "aqi-good";
+      }
+    }
 
-function aqiLevelToLabel(level) {
-  const labelMap = {
-    1: "Très bon",
-    2: "Bon",
-    3: "Moyen",
-    4: "Mauvais",
-    5: "Très mauvais"
-  };
-  return labelMap[level] || "—";
-}
+    function aqiLevelToLabel(level) {
+      const labelMap = {
+        1: "Très bon",
+        2: "Bon",
+        3: "Moyen",
+        4: "Mauvais",
+        5: "Très mauvais"
+      };
+      return labelMap[level] || "—";
+    }
 
-function clampLevel(v) {
-  const n = Number(v);
-  if (!Number.isFinite(n)) return null;
-  if (n <= 1) return 1;
-  if (n === 2) return 2;
-  if (n === 3) return 3;
-  if (n === 4) return 4;
-  return 5;
-}
+    function clampLevel(v) {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return null;
+      if (n <= 1) return 1;
+      if (n === 2) return 2;
+      if (n === 3) return 3;
+      if (n === 4) return 4;
+      return 5;
+    }
 
-// Map AQI 0..500 -> 1..5 (échelle simple)
-function breezoAqiToLevel(aqi) {
-  const n = Number(aqi);
-  if (!Number.isFinite(n)) return null;
-  if (n <= 50) return 1;
-  if (n <= 100) return 2;
-  if (n <= 150) return 3;
-  if (n <= 200) return 4;
-  return 5;
-}
+    // Map AQI 0..500 -> 1..5 (échelle simple)
+    function breezoAqiToLevel(aqi) {
+      const n = Number(aqi);
+      if (!Number.isFinite(n)) return null;
+      if (n <= 50) return 1;
+      if (n <= 100) return 2;
+      if (n <= 150) return 3;
+      if (n <= 200) return 4;
+      return 5;
+    }
 
-// Atmo index (souvent 1..6) -> 1..5
-function atmoToLevel(atmoCode) {
-  if (atmoCode == null) return null;
-  const n = Number(atmoCode);
-  if (Number.isFinite(n)) {
-    if (n <= 1) return 1;
-    if (n === 2) return 2;
-    if (n === 3) return 3;
-    if (n === 4) return 4;
-    return 5; // 5 ou 6 => très mauvais
-  }
-  const s = String(atmoCode).toLowerCase();
-  if (s.includes("très bon")) return 1;
-  if (s.includes("bon")) return 2;
-  if (s.includes("moy")) return 3;
-  if (s.includes("mauvais") || s.includes("médiocre")) return 4;
-  if (s.includes("très mauvais")) return 5;
-  return null;
-}
+    // Atmo index (souvent 1..6) -> 1..5
+    function atmoToLevel(atmoCode) {
+      if (atmoCode == null) return null;
+      const n = Number(atmoCode);
+      if (Number.isFinite(n)) {
+        if (n <= 1) return 1;
+        if (n === 2) return 2;
+        if (n === 3) return 3;
+        if (n === 4) return 4;
+        return 5; // 5 ou 6 => très mauvais
+      }
+      const s = String(atmoCode).toLowerCase();
+      if (s.includes("très bon")) return 1;
+      if (s.includes("bon")) return 2;
+      if (s.includes("moy")) return 3;
+      if (s.includes("mauvais") || s.includes("médiocre")) return 4;
+      if (s.includes("très mauvais")) return 5;
+      return null;
+    }
 
-function minMax(values) {
-  const nums = values.filter(v => typeof v === "number" && Number.isFinite(v));
-  if (!nums.length) return null;
-  const mn = Math.min(...nums);
-  const mx = Math.max(...nums);
-  return { mn, mx };
-}
+    function minMax(values) {
+      const nums = values.filter(v => typeof v === "number" && Number.isFinite(v));
+      if (!nums.length) return null;
+      const mn = Math.min(...nums);
+      const mx = Math.max(...nums);
+      return { mn, mx };
+    }
 
-function formatRange(values, unit, decimals=1) {
-  const mm = minMax(values);
-  if (!mm) return "—";
-  if (Math.abs(mm.mx - mm.mn) < 0.05) return `${mm.mn.toFixed(decimals)} ${unit}`;
-  return `${mm.mn.toFixed(decimals)}–${mm.mx.toFixed(decimals)} ${unit}`;
-}
+    function formatRange(values, unit, decimals=1) {
+      const mm = minMax(values);
+      if (!mm) return "—";
+      if (Math.abs(mm.mx - mm.mn) < 0.05) return `${mm.mn.toFixed(decimals)} ${unit}`;
+      return `${mm.mn.toFixed(decimals)}–${mm.mx.toFixed(decimals)} ${unit}`;
+    }
 
-function ugm3ToPpb(ugm3, molarMass) {
-  // approx standard: 24.45 L/mol à 25°C, 1 atm
-  if (!(typeof ugm3 === "number") || !Number.isFinite(ugm3) || ugm3 <= 0) return null;
-  return ugm3 * 24.45 / molarMass;
-}
+    function ugm3ToPpb(ugm3, molarMass) {
+      // approx standard: 24.45 L/mol à 25°C, 1 atm
+      if (!(typeof ugm3 === "number") || !Number.isFinite(ugm3) || ugm3 <= 0) return null;
+      return ugm3 * 24.45 / molarMass;
+    }
 
-function ugm3ToPpmFromUg(ugm3, molarMass) {
-  // ug/m3 -> ppm : ug/m3 -> mg/m3 / (molarMass g/mol) * 24.45
-  if (!(typeof ugm3 === "number") || !Number.isFinite(ugm3) || ugm3 <= 0) return null;
-  // for CO, molarMass=28.0 g/mol but ug/m3 needs convert to mg/m3:
-  const mgm3 = ugm3 / 1000.0;
-  return mgm3 * 24.45 / molarMass;
-}
+    function ugm3ToPpmFromUg(ugm3, molarMass) {
+      // ug/m3 -> ppm : ug/m3 -> mg/m3 / (molarMass g/mol) * 24.45
+      if (!(typeof ugm3 === "number") || !Number.isFinite(ugm3) || ugm3 <= 0) return null;
+      const mgm3 = ugm3 / 1000.0;
+      return mgm3 * 24.45 / molarMass;
+    }
 
-function renderAirQualityMulti({ ow, bz, atmo, commune }) {
-  const div = document.getElementById("aqiContent");
-  div.innerHTML = "";
+    // --------- NOUVEAU : lecture intelligente ----------
+    function makeAirTips({ fusedLevel, levels, hasParticles, windKmh, humidity, rainPeak, tempC }) {
+      // Approche simple, assumée: on donne des conseils pratiques, pas du médical.
+      const tips = [];
+      let title = "Lecture automatique";
+      let posture = "Neutre";
 
-  // ---- OpenWeather concentrations ----
-  let owLevel = null;
-  let owLabel = "—";
-  let owPm25=null, owPm10=null, owO3=null, owNo2=null, owSo2=null, owCo=null;
+      const minL = levels.length ? Math.min(...levels) : null;
+      const maxL = levels.length ? Math.max(...levels) : null;
+      const spread = (minL != null && maxL != null) ? (maxL - minL) : 0;
 
-  if (ow?.list?.[0]) {
-    const d = ow.list[0];
-    owLevel = clampLevel(d?.main?.aqi);
-    owLabel = owLevel ? aqiLevelToLabel(owLevel) : "—";
-    const c = d.components || {};
-    owPm25 = c.pm2_5 ?? null;
-    owPm10 = c.pm10 ?? null;
-    owO3   = c.o3   ?? null;
-    owNo2  = c.no2  ?? null;
-    owSo2  = c.so2  ?? null;
-    owCo   = c.co   ?? null;
-  }
+      const windy = (typeof windKmh === "number" && windKmh >= 25);
+      const veryHumid = (typeof humidity === "number" && humidity >= 85);
+      const rainSoon = (typeof rainPeak === "number" && rainPeak > 0.4);
 
-  // ---- BreezoMeter concentrations ----
-  let bzLevel = null;
-  let bzAqiText = "—";
-  let bzPm25=null, bzPm10=null, bzO3=null, bzNo2=null, bzSo2=null, bzCo=null;
+      // Base par niveau
+      if (fusedLevel == null) {
+        title = "Pas assez de données";
+        posture = "Indéterminé";
+        tips.push("Aucune source air exploitable sur cette mise à jour.");
+        tips.push("Si tu sais que l’air est sensible chez toi (bois, trafic, etc.), reste prudent et observe l’odeur / la brume.");
+        return { title, posture, tips, spread };
+      }
 
-  if (bz?.data) {
-    const idx = bz.data.indexes?.baqi;
-    bzLevel = breezoAqiToLevel(idx?.aqi);
-    bzAqiText = idx?.aqi != null ? `AQI ${idx.aqi}` : "—";
+      if (fusedLevel <= 2) {
+        title = "Air correct";
+        posture = "OK";
+        tips.push("Tu peux aérer normalement (10–15 min).");
+        tips.push("Activité dehors: sans restriction particulière.");
+      } else if (fusedLevel === 3) {
+        title = "Air moyen";
+        posture = "Prudence";
+        tips.push("Aération: plutôt courte et ciblée (5–10 min), évite si tu sens une odeur de fumée/échappement.");
+        tips.push("Sport intense dehors: à modérer si tu es sensible (asthme, irritation).");
+      } else if (fusedLevel === 4) {
+        title = "Air mauvais";
+        posture = "Limiter";
+        tips.push("Aération: courte (2–5 min) ou à repousser si possible.");
+        tips.push("Sport dehors: évite l’intensif, privilégie en intérieur.");
+      } else {
+        title = "Air très mauvais";
+        posture = "À éviter";
+        tips.push("Aération: minimise. Ferme si tu peux (surtout côté rue).");
+        tips.push("Évite l’effort dehors. Si tu dois sortir: parcours court, loin du trafic.");
+      }
 
-    const p = bz.data.pollutants || {};
-    bzPm25 = p.pm25?.concentration?.value ?? null;
-    bzPm10 = p.pm10?.concentration?.value ?? null;
-    bzO3   = p.o3?.concentration?.value   ?? null;
-    bzNo2  = p.no2?.concentration?.value  ?? null;
-    bzSo2  = p.so2?.concentration?.value  ?? null;
-    bzCo   = p.co?.concentration?.value   ?? null;
-  }
+      // Ajustements météo (bon sens)
+      if (windy) {
+        tips.push("Vent soutenu: ça aide souvent à disperser, surveille si l’indice baisse au prochain refresh.");
+      }
+      if (veryHumid) {
+        tips.push("Humidité élevée: l’air peut sembler plus lourd; aération courte mais efficace si besoin de renouveler.");
+      }
+      if (rainSoon) {
+        tips.push("Pluie/averses proches: ça peut “laver” une partie des particules, regarde l’évolution après la pluie.");
+      }
+      if (hasParticles && fusedLevel >= 3) {
+        tips.push("Si tu as un purificateur/filtration: c’est le moment de le faire tourner (mode normal, pas forcément à fond).");
+      }
+      if (typeof tempC === "number" && tempC <= 2 && fusedLevel <= 2) {
+        tips.push("Il fait froid: aération efficace mais brève, histoire de ne pas refroidir la maison.");
+      }
 
-  // ---- Atmo index (France) ----
-  let atmoLevel = null;
-  let atmoLabel = "—";
-  if (atmo) {
-    // code_qual ou qualite_... selon retours
-    const code = atmo.code_qual ?? atmo.code ?? atmo.indice ?? null;
-    atmoLevel = atmoToLevel(code);
-    atmoLabel = atmoLevel ? aqiLevelToLabel(atmoLevel) : (code != null ? String(code) : "—");
-  }
+      // Cohérence sources
+      if (spread >= 2) {
+        tips.push("Note: les sources ne racontent pas toutes la même histoire. Je garde le principe de prudence (pire niveau).");
+      } else if (levels.length === 1) {
+        tips.push("Note: une seule source disponible. Interprétation à prendre avec recul.");
+      }
 
-  // ---- Fusion : on prend le pire niveau dispo ----
-  const levels = [owLevel, bzLevel, atmoLevel].filter(v => v != null);
-  const fused = levels.length ? Math.max(...levels) : null;
-  const fusedLabel = fused ? aqiLevelToLabel(fused) : "—";
-  const fusedClass = aqiLevelToClass(fused || 2);
+      return { title, posture, tips, spread };
+    }
 
-  // ---- UI : lignes sources ----
-  const rowsTop = [
-    ["Indice global (fusion)", `<span class="aqi-badge ${fusedClass}">${fused ? fused : "—"} – ${fusedLabel}</span>`],
-    ["Détail", `OW ${owLevel ?? "—"} | BZ ${bzAqiText} | Atmo ${atmoLabel}${commune ? ` (${commune})` : ""}`]
-  ];
+    function renderAirSmart(owData, airCtx) {
+      const div = document.getElementById("airSmartContent");
+      if (!div) return;
 
-  rowsTop.forEach(([l, v]) => {
-    const row = document.createElement("div");
-    row.className = "aqi-row";
-    row.innerHTML = `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
-    div.appendChild(row);
-  });
+      div.innerHTML = "";
 
-  // ---- Ranges concentrations (OW + BZ) ----
-  const pm25Txt = formatRange([owPm25, bzPm25], "µg/m³", 1);
-  const pm10Txt = formatRange([owPm10, bzPm10], "µg/m³", 1);
+      const cur = owData?.current;
+      const t = cur?.main?.temp;
+      const hum = cur?.main?.humidity;
+      const windKmh = (cur?.wind && typeof cur.wind.speed === "number") ? (cur.wind.speed * 3.6) : null;
+      const rainPeak = owData?.rain_info?.peak ?? null;
 
-  // gases display like before (ppb/ppm) but as ranges
-  const o3ppb  = [ugm3ToPpb(owO3, 48.0), ugm3ToPpb(bzO3, 48.0)];
-  const no2ppb = [ugm3ToPpb(owNo2, 46.0), ugm3ToPpb(bzNo2, 46.0)];
-  const so2ppb = [ugm3ToPpb(owSo2, 64.0), ugm3ToPpb(bzSo2, 64.0)];
-  const coppm  = [ugm3ToPpmFromUg(owCo, 28.0), ugm3ToPpmFromUg(bzCo, 28.0)];
+      const fusedLevel = airCtx?.fusedLevel ?? null;
+      const fusedLabel = airCtx?.fusedLabel ?? "—";
+      const fusedClass = airCtx?.fusedClass ?? "aqi-good";
+      const levels = airCtx?.levels ?? [];
+      const hasParticles = !!airCtx?.hasParticles;
 
-  const o3Txt  = minMax(o3ppb)  ? (Math.max(...o3ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(o3ppb, "ppb", 0)) : "—";
-  const no2Txt = minMax(no2ppb) ? (Math.max(...no2ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(no2ppb, "ppb", 0)) : "—";
-  const so2Txt = minMax(so2ppb) ? (Math.max(...so2ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(so2ppb, "ppb", 0)) : "—";
-  const coTxt  = minMax(coppm)  ? (Math.max(...coppm.filter(v=>v!=null)) < 0.01 ? "<0.01 ppm" : formatRange(coppm, "ppm", 2)) : "—";
+      const headerRows = [
+        ["Indice global", fusedLevel ? `<span class="aqi-badge ${fusedClass}">${fusedLevel} – ${fusedLabel}</span>` : "—"],
+        ["Conditions météo", `${t != null ? t.toFixed(1) + " °C" : "—"} · Hum ${hum != null ? hum.toFixed(0) + " %" : "—"} · Vent ${windKmh != null ? windKmh.toFixed(0) + " km/h" : "—"}`],
+        ["Pluie (prochaines h)", (rainPeak != null ? `${rainPeak.toFixed(1)} mm/h (pic estimé)` : "—")]
+      ];
 
-  const rows = [
-    ["PM₂.₅", pm25Txt],
-    ["PM₁₀", pm10Txt],
-    ["O₃", o3Txt],
-    ["NO₂", no2Txt],
-    ["SO₂", so2Txt],
-    ["CO", coTxt],
-    ["Source concentrations", "OpenWeather + BreezoMeter"]
-  ];
+      headerRows.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "air-row";
+        row.innerHTML = `<span class="air-label">${l}</span><span class="air-value">${v}</span>`;
+        div.appendChild(row);
+      });
 
-  rows.forEach(([l, v]) => {
-    const row = document.createElement("div");
-    row.className = "aqi-row";
-    row.innerHTML = `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
-    div.appendChild(row);
-  });
-}
-      function renderModelComparison(owData, omData) {
+      const { title, posture, tips } = makeAirTips({
+        fusedLevel,
+        levels,
+        hasParticles,
+        windKmh,
+        humidity: hum,
+        rainPeak,
+        tempC: t
+      });
+
+      const tipBox = document.createElement("div");
+      tipBox.className = "air-tip";
+      tipBox.innerHTML = `
+        <div>
+          <strong>${title}</strong>
+          <span class="air-pill">${posture}</span>
+        </div>
+        <ul style="margin-top:8px; padding-left:18px;">
+          ${tips.map(x => `<li style="margin-bottom:6px;">${x}</li>`).join("")}
+        </ul>
+      `;
+      div.appendChild(tipBox);
+    }
+
+    // --------- Qualité de l'air multi-sources + RETOUR CONTEXTE ----------
+    function renderAirQualityMulti({ ow, bz, atmo, commune }) {
+      const div = document.getElementById("aqiContent");
+      div.innerHTML = "";
+
+      // ---- OpenWeather concentrations ----
+      let owLevel = null;
+      let owLabel = "—";
+      let owPm25=null, owPm10=null, owO3=null, owNo2=null, owSo2=null, owCo=null;
+
+      if (ow?.list?.[0]) {
+        const d = ow.list[0];
+        owLevel = clampLevel(d?.main?.aqi);
+        owLabel = owLevel ? aqiLevelToLabel(owLevel) : "—";
+        const c = d.components || {};
+        owPm25 = c.pm2_5 ?? null;
+        owPm10 = c.pm10 ?? null;
+        owO3   = c.o3   ?? null;
+        owNo2  = c.no2  ?? null;
+        owSo2  = c.so2  ?? null;
+        owCo   = c.co   ?? null;
+      }
+
+      // ---- BreezoMeter concentrations ----
+      let bzLevel = null;
+      let bzAqiText = "—";
+      let bzPm25=null, bzPm10=null, bzO3=null, bzNo2=null, bzSo2=null, bzCo=null;
+
+      if (bz?.data) {
+        const idx = bz.data.indexes?.baqi;
+        bzLevel = breezoAqiToLevel(idx?.aqi);
+        bzAqiText = idx?.aqi != null ? `AQI ${idx.aqi}` : "—";
+
+        const p = bz.data.pollutants || {};
+        bzPm25 = p.pm25?.concentration?.value ?? null;
+        bzPm10 = p.pm10?.concentration?.value ?? null;
+        bzO3   = p.o3?.concentration?.value   ?? null;
+        bzNo2  = p.no2?.concentration?.value  ?? null;
+        bzSo2  = p.so2?.concentration?.value  ?? null;
+        bzCo   = p.co?.concentration?.value   ?? null;
+      }
+
+      // ---- Atmo index (France) ----
+      let atmoLevel = null;
+      let atmoLabel = "—";
+      if (atmo) {
+        const code = atmo.code_qual ?? atmo.code ?? atmo.indice ?? null;
+        atmoLevel = atmoToLevel(code);
+        atmoLabel = atmoLevel ? aqiLevelToLabel(atmoLevel) : (code != null ? String(code) : "—");
+      }
+
+      // ---- Fusion : on prend le pire niveau dispo ----
+      const levels = [owLevel, bzLevel, atmoLevel].filter(v => v != null);
+      const fused = levels.length ? Math.max(...levels) : null;
+      const fusedLabel = fused ? aqiLevelToLabel(fused) : "—";
+      const fusedClass = aqiLevelToClass(fused || 2);
+
+      // ---- UI : lignes sources ----
+      const rowsTop = [
+        ["Indice global (fusion)", `<span class="aqi-badge ${fusedClass}">${fused ? fused : "—"} – ${fusedLabel}</span>`],
+        ["Détail", `OW ${owLevel ?? "—"} | BZ ${bzAqiText} | Atmo ${atmoLabel}${commune ? ` (${commune})` : ""}`]
+      ];
+
+      rowsTop.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "aqi-row";
+        row.innerHTML = `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
+        div.appendChild(row);
+      });
+
+      // ---- Ranges concentrations (OW + BZ) ----
+      const pm25Txt = formatRange([owPm25, bzPm25], "µg/m³", 1);
+      const pm10Txt = formatRange([owPm10, bzPm10], "µg/m³", 1);
+
+      // gases display like before (ppb/ppm) but as ranges
+      const o3ppb  = [ugm3ToPpb(owO3, 48.0), ugm3ToPpb(bzO3, 48.0)];
+      const no2ppb = [ugm3ToPpb(owNo2, 46.0), ugm3ToPpb(bzNo2, 46.0)];
+      const so2ppb = [ugm3ToPpb(owSo2, 64.0), ugm3ToPpb(bzSo2, 64.0)];
+      const coppm  = [ugm3ToPpmFromUg(owCo, 28.0), ugm3ToPpmFromUg(bzCo, 28.0)];
+
+      const o3Txt  = minMax(o3ppb)  ? (Math.max(...o3ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(o3ppb, "ppb", 0)) : "—";
+      const no2Txt = minMax(no2ppb) ? (Math.max(...no2ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(no2ppb, "ppb", 0)) : "—";
+      const so2Txt = minMax(so2ppb) ? (Math.max(...so2ppb.filter(v=>v!=null)) < 1 ? "<1 ppb" : formatRange(so2ppb, "ppb", 0)) : "—";
+      const coTxt  = minMax(coppm)  ? (Math.max(...coppm.filter(v=>v!=null)) < 0.01 ? "<0.01 ppm" : formatRange(coppm, "ppm", 2)) : "—";
+
+      const rows = [
+        ["PM₂.₅", pm25Txt],
+        ["PM₁₀", pm10Txt],
+        ["O₃", o3Txt],
+        ["NO₂", no2Txt],
+        ["SO₂", so2Txt],
+        ["CO", coTxt],
+        ["Source concentrations", "OpenWeather + BreezoMeter"]
+      ];
+
+      rows.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "aqi-row";
+        row.innerHTML = `<span class="aqi-label">${l}</span><span class="aqi-value">${v}</span>`;
+        div.appendChild(row);
+      });
+
+      // Retourne un contexte pour la carte "lecture intelligente"
+      const hasParticles =
+        [owPm25, owPm10, bzPm25, bzPm10].some(v => typeof v === "number" && Number.isFinite(v) && v > 0);
+
+      return {
+        fusedLevel: fused,
+        fusedLabel,
+        fusedClass,
+        levels,
+        hasParticles
+      };
+    }
+
+    function renderModelComparison(owData, omData) {
       const tbody = document.querySelector("#compareTable tbody");
       tbody.innerHTML = "";
 
@@ -2076,44 +2258,44 @@ function renderAirQualityMulti({ ow, bz, atmo, commune }) {
         tbody.appendChild(tr);
       }
     }
-function renderStormRisk(omData) {
-  const div = document.getElementById("stormContent");
-  if (!div) return;
 
-  if (!omData) {
-    div.textContent = "Données Open-Meteo indisponibles.";
-    return;
-  }
+    function renderStormRisk(omData) {
+      const div = document.getElementById("stormContent");
+      if (!div) return;
 
-  const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
-  const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
+      if (!omData) {
+        div.textContent = "Données Open-Meteo indisponibles.";
+        return;
+      }
 
-  let niveau = "Faible";
-  if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
-  else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
-  else if (maxVal > 1500) niveau = "Fort";
+      const capeNow = typeof omData.capeNow === "number" ? omData.capeNow : 0;
+      const maxVal  = typeof omData.capeMax12h === "number" ? omData.capeMax12h : 0;
 
-  let riskClass = "storm-low";
-  if (niveau === "Modéré") riskClass = "storm-moderate";
-  else if (niveau === "Marqué") riskClass = "storm-marked";
-  else if (niveau === "Fort") riskClass = "storm-strong";
+      let niveau = "Faible";
+      if (maxVal > 400 && maxVal <= 800) niveau = "Modéré";
+      else if (maxVal > 800 && maxVal <= 1500) niveau = "Marqué";
+      else if (maxVal > 1500) niveau = "Fort";
 
-  div.innerHTML = "";
+      let riskClass = "storm-low";
+      if (niveau === "Modéré") riskClass = "storm-moderate";
+      else if (niveau === "Marqué") riskClass = "storm-marked";
+      else if (niveau === "Fort") riskClass = "storm-strong";
 
-  const rows = [
-    ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
-    ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
-    ["Risque orageux (simple)", `<span class="storm-badge ${riskClass}">${niveau}</span>`]
-  ];
+      div.innerHTML = "";
 
-  rows.forEach(([l, v]) => {
-    const row = document.createElement("div");
-    row.className = "storm-row";
-    row.innerHTML = `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
-    div.appendChild(row);
-  });
-}
+      const rows = [
+        ["CAPE actuel", `${capeNow.toFixed(0)} J/kg`],
+        ["CAPE max 12 h", `${maxVal.toFixed(0)} J/kg`],
+        ["Risque orageux (simple)", `<span class="storm-badge ${riskClass}">${niveau}</span>`]
+      ];
 
+      rows.forEach(([l, v]) => {
+        const row = document.createElement("div");
+        row.className = "storm-row";
+        row.innerHTML = `<span class="storm-label">${l}</span><span class="storm-value">${v}</span>`;
+        div.appendChild(row);
+      });
+    }
 
     // ------------- CHARGEMENT GLOBAL -------------
 
@@ -2158,28 +2340,32 @@ function renderStormRisk(omData) {
           document.getElementById("stormContent").textContent = "Données Open-Meteo indisponibles.";
         }
 
-        
-// Qualité de l'air multi-sources
-const owAqi = (aqiRes.status === "fulfilled") ? aqiRes.value : null;
-const bzAqi = (bzRes.status === "fulfilled") ? bzRes.value : null;
+        // Qualité de l'air multi-sources
+        const owAqi = (aqiRes.status === "fulfilled") ? aqiRes.value : null;
+        const bzAqi = (bzRes.status === "fulfilled") ? bzRes.value : null;
 
-let communeNom = null;
-let atmoItem = null;
-if (inseeRes.status === "fulfilled" && inseeRes.value) {
-  communeNom = inseeRes.value.nom || null;
-  try {
-    atmoItem = await fetchAtmoIndiceATMO(inseeRes.value.code, getLocalISODate());
-  } catch (e) {
-    // Atmo indisponible -> on continue sans bloquer
-    atmoItem = null;
-  }
-}
+        let communeNom = null;
+        let atmoItem = null;
+        if (inseeRes.status === "fulfilled" && inseeRes.value) {
+          communeNom = inseeRes.value.nom || null;
+          try {
+            atmoItem = await fetchAtmoIndiceATMO(inseeRes.value.code, getLocalISODate());
+          } catch (e) {
+            // Atmo indisponible -> on continue sans bloquer
+            atmoItem = null;
+          }
+        }
 
-if (owAqi || bzAqi || atmoItem) {
-  renderAirQualityMulti({ ow: owAqi, bz: bzAqi, atmo: atmoItem, commune: communeNom });
-} else {
-  document.getElementById("aqiContent").textContent = "Données qualité de l’air indisponibles.";
-}
+        let airCtx = null;
+        if (owAqi || bzAqi || atmoItem) {
+          airCtx = renderAirQualityMulti({ ow: owAqi, bz: bzAqi, atmo: atmoItem, commune: communeNom });
+        } else {
+          document.getElementById("aqiContent").textContent = "Données qualité de l’air indisponibles.";
+          airCtx = { fusedLevel: null, fusedLabel: "—", fusedClass: "aqi-good", levels: [], hasParticles: false };
+        }
+
+        // NOUVEAU : carte "Air – lecture intelligente"
+        renderAirSmart(owData, airCtx);
 
         document.getElementById("globalError").textContent = "";
       } catch (e) {
@@ -2215,7 +2401,6 @@ if (owAqi || bzAqi || atmoItem) {
         .addEventListener("click", handleAddLocation);
       document.getElementById("geoLocateBtn")
         .addEventListener("click", askGeolocation);
-
 
       document.getElementById("deleteLocationBtn")
         .addEventListener("click", handleDeleteLocation);
